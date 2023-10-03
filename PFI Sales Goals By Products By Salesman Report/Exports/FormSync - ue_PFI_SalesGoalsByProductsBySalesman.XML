@@ -1,0 +1,681 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FormsAndObjectsExport Version="010000">
+   <Forms Type="1">
+      <Form Name="ue_PFI_SalesGoalsByProductsBySalesman" Scope="1" ScopeName="[NULL]">
+         <Caption>fPFI_PFISalesGoalsByProductsBySalesmanReport</Caption>
+         <Type>0</Type>
+         <StandardOperations>1019</StandardOperations>
+         <Flags>1048584</Flags>
+         <Height>12</Height>
+         <LeftPos>0</LeftPos>
+         <TopPos>0</TopPos>
+         <Width>55</Width>
+         <HelpContextID>-1</HelpContextID>
+         <PaneZeroSize>0</PaneZeroSize>
+         <PrimaryDataSource />
+         <MasterDeviceID>0</MasterDeviceID>
+         <Components>
+            <Component Name="EndingStatic">
+               <DeviceID>-1</DeviceID>
+               <Type>0</Type>
+               <TabOrder>0</TabOrder>
+               <TopPos>2.38888888888889</TopPos>
+               <LeftPos>34.125</LeftPos>
+               <Height>1</Height>
+               <ListHeight>0</ListHeight>
+               <Width>10.25</Width>
+               <Caption>sEnding</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <Binding>0</Binding>
+               <Flags>16</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <Post301Format>JUSTIFY(R)</Post301Format>
+               <EffectiveCaption>sEnding</EffectiveCaption>
+            </Component>
+            <Component Name="FamilyCodeEnding">
+               <DeviceID>-1</DeviceID>
+               <Type>27</Type>
+               <TabOrder>5</TabOrder>
+               <TopPos>5.44444444444444</TopPos>
+               <LeftPos>34.125</LeftPos>
+               <Height>1.27777777777778</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15.875</Width>
+               <Caption>sFamilyCode</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <DataSource>variables.FamilyCodeEndingVar</DataSource>
+               <Binding>6</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <DefaultFrom>FamilyCodeVar()</DefaultFrom>
+               <Post301Format />
+               <EffectiveCaption>sFamilyCode</EffectiveCaption>
+            </Component>
+            <Component Name="FamilyCodeStarting">
+               <DeviceID>-1</DeviceID>
+               <Type>27</Type>
+               <TabOrder>4</TabOrder>
+               <TopPos>5.44444444444444</TopPos>
+               <LeftPos>12.125</LeftPos>
+               <Height>1.27777777777778</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15.875</Width>
+               <Caption>sFamilyCode</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <DataSource>variables.FamilyCodeStartingVar</DataSource>
+               <Binding>6</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <DefaultFrom>FamilyCodeVar()</DefaultFrom>
+               <Post301Format />
+               <EffectiveCaption>sFamilyCode</EffectiveCaption>
+            </Component>
+            <Component Name="FamilyCodeStatic">
+               <DeviceID>-1</DeviceID>
+               <Type>0</Type>
+               <TabOrder>0</TabOrder>
+               <TopPos>5.66666666666667</TopPos>
+               <LeftPos>1.625</LeftPos>
+               <Height>1</Height>
+               <ListHeight>0</ListHeight>
+               <Width>10.25</Width>
+               <Caption>sFamilyCode</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <Binding>0</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <Post301Format>JUSTIFY(R)</Post301Format>
+               <EffectiveCaption>sFamilyCode</EffectiveCaption>
+            </Component>
+            <Component Name="FiscalYearEnding">
+               <DeviceID>-1</DeviceID>
+               <Type>27</Type>
+               <TabOrder>3</TabOrder>
+               <TopPos>3.72222222222222</TopPos>
+               <LeftPos>34.125</LeftPos>
+               <Height>1.27777777777778</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15.875</Width>
+               <Caption>sFiscalYear</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <DataSource>variables.FiscalYearEndingVar</DataSource>
+               <Binding>6</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <DefaultFrom>FiscalYear()</DefaultFrom>
+               <Post301Format />
+               <EffectiveCaption>sFiscalYear</EffectiveCaption>
+            </Component>
+            <Component Name="FiscalYearStarting">
+               <DeviceID>-1</DeviceID>
+               <Type>27</Type>
+               <TabOrder>2</TabOrder>
+               <TopPos>3.66666666666667</TopPos>
+               <LeftPos>12.125</LeftPos>
+               <Height>1.27777777777778</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15.875</Width>
+               <Caption>sFiscalYear</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <DataSource>variables.FiscalYearStartingVar</DataSource>
+               <Binding>6</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <DefaultFrom>FiscalYear()</DefaultFrom>
+               <Post301Format />
+               <EffectiveCaption>sFiscalYear</EffectiveCaption>
+            </Component>
+            <Component Name="FiscalYearStatic">
+               <DeviceID>-1</DeviceID>
+               <Type>0</Type>
+               <TabOrder>0</TabOrder>
+               <TopPos>4.05555555555556</TopPos>
+               <LeftPos>1.625</LeftPos>
+               <Height>1</Height>
+               <ListHeight>0</ListHeight>
+               <Width>10.25</Width>
+               <Caption>sFiscalYear</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <Binding>0</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <Post301Format>JUSTIFY(R)</Post301Format>
+               <EffectiveCaption>sFiscalYear</EffectiveCaption>
+            </Component>
+            <Component Name="PreviewButton">
+               <DeviceID>-1</DeviceID>
+               <Type>8</Type>
+               <TabOrder>8</TabOrder>
+               <TopPos>9</TopPos>
+               <LeftPos>12.125</LeftPos>
+               <Height>1.27777777777778</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15.875</Width>
+               <Caption>sPreview</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <Binding>0</Binding>
+               <EventToGenerate>PreviewClicked</EventToGenerate>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <Post301Format />
+               <EffectiveCaption>sPreview</EffectiveCaption>
+            </Component>
+            <Component Name="PrintButton">
+               <DeviceID>-1</DeviceID>
+               <Type>8</Type>
+               <TabOrder>9</TabOrder>
+               <TopPos>9</TopPos>
+               <LeftPos>34.125</LeftPos>
+               <Height>1.27777777777778</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15.875</Width>
+               <Caption>sPrint</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <Binding>0</Binding>
+               <EventToGenerate>GenerateReport</EventToGenerate>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <Post301Format />
+               <EffectiveCaption>sPrint</EffectiveCaption>
+            </Component>
+            <Component Name="SalesPersonEnding">
+               <DeviceID>-1</DeviceID>
+               <Type>27</Type>
+               <TabOrder>7</TabOrder>
+               <TopPos>7.11111111111111</TopPos>
+               <LeftPos>34.125</LeftPos>
+               <Height>1.27777777777778</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15.875</Width>
+               <Caption>sSalesperson</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <DataSource>variables.SalesPersonEndingVar</DataSource>
+               <Binding>6</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <DefaultFrom>SlsmanVar()</DefaultFrom>
+               <Post301Format />
+               <EffectiveCaption>sSalesperson</EffectiveCaption>
+            </Component>
+            <Component Name="SalesPersonStarting">
+               <DeviceID>-1</DeviceID>
+               <Type>27</Type>
+               <TabOrder>6</TabOrder>
+               <TopPos>7.11111111111111</TopPos>
+               <LeftPos>12.125</LeftPos>
+               <Height>1.27777777777778</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15.875</Width>
+               <Caption>sSalesperson</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <DataSource>variables.SalesPersonStartingVar</DataSource>
+               <Binding>6</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <DefaultFrom>SlsmanVar()</DefaultFrom>
+               <Post301Format />
+               <EffectiveCaption>sSalesperson</EffectiveCaption>
+            </Component>
+            <Component Name="SalesPersonStatic">
+               <DeviceID>-1</DeviceID>
+               <Type>0</Type>
+               <TabOrder>0</TabOrder>
+               <TopPos>7.27777777777778</TopPos>
+               <LeftPos>1.625</LeftPos>
+               <Height>1</Height>
+               <ListHeight>0</ListHeight>
+               <Width>10.25</Width>
+               <Caption>sSalesPerson</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <Binding>0</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <Post301Format>JUSTIFY(R)</Post301Format>
+               <EffectiveCaption>sSalesPerson</EffectiveCaption>
+            </Component>
+            <Component Name="SiteEdit">
+               <DeviceID>-1</DeviceID>
+               <Type>27</Type>
+               <TabOrder>1</TabOrder>
+               <TopPos>0.666666666666667</TopPos>
+               <LeftPos>12.125</LeftPos>
+               <Height>1.27777777777778</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15.875</Width>
+               <Caption>sSite</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <DataSource>variables.SiteVar</DataSource>
+               <Binding>6</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <DefaultFrom>Site2()</DefaultFrom>
+               <Post301Format />
+               <EffectiveCaption>sSite</EffectiveCaption>
+            </Component>
+            <Component Name="SiteStatic">
+               <DeviceID>-1</DeviceID>
+               <Type>0</Type>
+               <TabOrder>0</TabOrder>
+               <TopPos>0.944444444444444</TopPos>
+               <LeftPos>1.625</LeftPos>
+               <Height>1</Height>
+               <ListHeight>0</ListHeight>
+               <Width>10.25</Width>
+               <Caption>sSite</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <Binding>0</Binding>
+               <Flags>0</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <Post301Format>JUSTIFY(R)</Post301Format>
+               <EffectiveCaption>sSite</EffectiveCaption>
+            </Component>
+            <Component Name="StartingStatic">
+               <DeviceID>-1</DeviceID>
+               <Type>0</Type>
+               <TabOrder>0</TabOrder>
+               <TopPos>2.44444444444444</TopPos>
+               <LeftPos>11.875</LeftPos>
+               <Height>1</Height>
+               <ListHeight>0</ListHeight>
+               <Width>10.25</Width>
+               <Caption>sStarting</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <Binding>0</Binding>
+               <Flags>16</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <Post301Format>JUSTIFY(R)</Post301Format>
+               <EffectiveCaption>sStarting</EffectiveCaption>
+            </Component>
+         </Components>
+         <EventHandlers>
+            <EventHandler Name="GenerateReport" Sequence="0">
+               <ResponseType>19</ResponseType>
+               <Response>TASKNAME(V(BGTaskName))TASKPARMS(V(BGTaskParms))</Response>
+            </EventHandler>
+            <EventHandler Name="GenerateReport" Sequence="1">
+               <ResponseType>8</ResponseType>
+               <Response>ReportSubmitted()</Response>
+            </EventHandler>
+            <EventHandler Name="PreviewClicked" Sequence="0">
+               <ResponseType>7</ResponseType>
+               <Response>WBDataViewResults( SETVARVALUES(DataViewName=PFI Sales Goals By Products By Salesman Report,DataViewPromptForInputs=0,InputParameter1=V(SiteVar),InputParameter2=V(FiscalYearStartingVar),InputParameter3=V(FiscalYearEndingVar),InputParameter4=V(FamilyCodeStartingVar),InputParameter5=V(FamilyCodeEndingVar),InputParameter6=V(SalesPersonStartingVar),InputParameter7=V(SalesPersonEndingVar)) )</Response>
+            </EventHandler>
+            <EventHandler Name="StdFormInitCompleted" Sequence="0">
+               <ResponseType>35</ResponseType>
+               <Response>DefaultVariablesOnOpen()</Response>
+            </EventHandler>
+         </EventHandlers>
+         <Variables>
+            <Variable Name="BGTaskName">
+               <Value>PFI_SalesGoalsByProductsBySalesmanReport</Value>
+               <Value2 />
+               <Value3 />
+               <Description />
+            </Variable>
+            <Variable Name="BGTaskParms">
+               <Value>V(SiteVar),V(FiscalYearStartingVar),V(FiscalYearEndingVar),V(FamilyCodeStartingVar),V(FamilyCodeEndingVar),V(SalesPersonStartingVar),V(SalesPersonEndingVar)</Value>
+               <Value2 />
+               <Value3 />
+               <Description />
+            </Variable>
+         </Variables>
+         <Script Language="Visual Basic">
+            <ScriptLines>
+               <ScriptLine>Option Explicit On</ScriptLine>
+               <ScriptLine>Option Strict On</ScriptLine>
+               <ScriptLine />
+               <ScriptLine>Imports System</ScriptLine>
+               <ScriptLine>Imports Microsoft.VisualBasic</ScriptLine>
+               <ScriptLine>Imports Mongoose.IDO.Protocol</ScriptLine>
+               <ScriptLine>Imports Mongoose.Scripting</ScriptLine>
+               <ScriptLine />
+               <ScriptLine />
+               <ScriptLine>Namespace Mongoose.FormScripts</ScriptLine>
+               <ScriptLine>Public Class ue_PFI_SalesGoalsByProductsBySalesman</ScriptLine>
+               <ScriptLine>Inherits FormScript</ScriptLine>
+               <ScriptLine />
+               <ScriptLine>        Public Sub DefaultVariablesOnOpen()</ScriptLine>
+               <ScriptLine>            ThisForm.Variables("FiscalYearStartingVar").Value = DateTime.Now.Year.ToString()</ScriptLine>
+               <ScriptLine>            ThisForm.Variables("FiscalYearEndingVar").Value = DateTime.Now.Year.ToString()</ScriptLine>
+               <ScriptLine>            ThisForm.Variables("SiteVar").Value = Application.Variables("Parm_Site").Value</ScriptLine>
+               <ScriptLine>        End Sub</ScriptLine>
+               <ScriptLine />
+               <ScriptLine>End Class</ScriptLine>
+               <ScriptLine>End Namespace</ScriptLine>
+            </ScriptLines>
+         </Script>
+         <Licenses>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>Entity</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::8b663e098c69da0d15d7b67aca32ae0bccc0c211a3b10f25d140f6863121208b</ModuleMemberSpec>
+            </License>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>Mobile</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::caba15914b0b203b7508689df38c4f0ce58b6f0d370ea41e5c49d156567955c9</ModuleMemberSpec>
+            </License>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>Mobile_MS</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::b05d38c35790009a6729b31475b79fa8c0aeb5f1a47830fec0bfb63d676d2857</ModuleMemberSpec>
+            </License>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>MoldingPack</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::d0c266da4b5e0cef91f5ef4b59282e4621cac490ffa46144f8b674fd12819c1e</ModuleMemberSpec>
+            </License>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>Transactional</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::196741aab540a36acd8636900de463fbfd2ee5da6eb3a361ebd1f4e51bd7a4cc</ModuleMemberSpec>
+            </License>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>Transactional_MS</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::20b1b2e3f0008c28f8da818d8a8548c85c295aef8d27e5f5c800cc76658b159e</ModuleMemberSpec>
+            </License>
+         </Licenses>
+      </Form>
+      <Form Name="ue_PFI_SalespersonFCBudgets" Scope="1" ScopeName="[NULL]">
+         <Caption>fPFI_PFISalesPersonFamilyCodeBudgets</Caption>
+         <Type>1</Type>
+         <StandardOperations>1019</StandardOperations>
+         <Flags>1048584</Flags>
+         <Height>21</Height>
+         <LeftPos>0</LeftPos>
+         <TopPos>0</TopPos>
+         <Width>69</Width>
+         <HelpContextID>-1</HelpContextID>
+         <PaneZeroSize>10</PaneZeroSize>
+         <PrimaryDataSource>V(fds_DataSource)</PrimaryDataSource>
+         <MasterDeviceID>0</MasterDeviceID>
+         <Components>
+            <Component Name="ActualOverrideGridCol">
+               <DeviceID>-1</DeviceID>
+               <Type>15</Type>
+               <TabOrder>5</TabOrder>
+               <TopPos>0</TopPos>
+               <LeftPos>0</LeftPos>
+               <Height>0</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15</Width>
+               <Caption>sPFI_ActualOverride</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName>FormCollectionGrid</ContainerName>
+               <ContainerSequence>4</ContainerSequence>
+               <DataSource>object.ActualOverride</DataSource>
+               <Binding>1</Binding>
+               <Flags>384</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <MenuName>StdDefault</MenuName>
+               <PropertyClassName>Amount</PropertyClassName>
+               <Post301Format />
+               <EffectiveCaption>sPFI_ActualOverride</EffectiveCaption>
+            </Component>
+            <Component Name="BudgetGridCol">
+               <DeviceID>-1</DeviceID>
+               <Type>15</Type>
+               <TabOrder>4</TabOrder>
+               <TopPos>0</TopPos>
+               <LeftPos>0</LeftPos>
+               <Height>0</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15</Width>
+               <Caption>sBudget</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName>FormCollectionGrid</ContainerName>
+               <ContainerSequence>3</ContainerSequence>
+               <DataSource>object.Budget</DataSource>
+               <Binding>1</Binding>
+               <Flags>384</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <MenuName>StdDefault</MenuName>
+               <PropertyClassName>Amount</PropertyClassName>
+               <Post301Format />
+               <EffectiveCaption>sBudget</EffectiveCaption>
+            </Component>
+            <Component Name="FamilyCodeGridCol">
+               <DeviceID>-1</DeviceID>
+               <Type>15</Type>
+               <TabOrder>2</TabOrder>
+               <TopPos>0</TopPos>
+               <LeftPos>0</LeftPos>
+               <Height>0</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15</Width>
+               <Caption>sFamilyCode</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName>FormCollectionGrid</ContainerName>
+               <ContainerSequence>2</ContainerSequence>
+               <DataSource>object.FamilyCode</DataSource>
+               <Binding>1</Binding>
+               <Flags>384</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <MenuName>StdDefault</MenuName>
+               <PropertyClassName>FamilyCode</PropertyClassName>
+               <Post301Format />
+               <EffectiveCaption>sFamilyCode</EffectiveCaption>
+            </Component>
+            <Component Name="FiscalYearGridCol">
+               <DeviceID>-1</DeviceID>
+               <Type>15</Type>
+               <TabOrder>3</TabOrder>
+               <TopPos>0</TopPos>
+               <LeftPos>0</LeftPos>
+               <Height>0</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15</Width>
+               <Caption>sFiscalYear</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName>FormCollectionGrid</ContainerName>
+               <ContainerSequence>0</ContainerSequence>
+               <DataSource>object.FiscalYear</DataSource>
+               <Binding>1</Binding>
+               <Flags>384</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <MenuName>StdDefault</MenuName>
+               <PropertyClassName>FiscalYear</PropertyClassName>
+               <Post301Format />
+               <EffectiveCaption>sFiscalYear</EffectiveCaption>
+            </Component>
+            <Component Name="FormCollectionGrid">
+               <DeviceID>-1</DeviceID>
+               <Type>14</Type>
+               <TabOrder>0</TabOrder>
+               <TopPos>0</TopPos>
+               <LeftPos>0</LeftPos>
+               <Height>21</Height>
+               <ListHeight>0</ListHeight>
+               <Width>69</Width>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName />
+               <ContainerSequence>0</ContainerSequence>
+               <DataSource>objects</DataSource>
+               <Binding>3</Binding>
+               <Flags>384</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <Post301Format />
+            </Component>
+            <Component Name="NotesGridCol">
+               <DeviceID>-1</DeviceID>
+               <Type>15</Type>
+               <TabOrder>6</TabOrder>
+               <TopPos>0</TopPos>
+               <LeftPos>0</LeftPos>
+               <Height>0</Height>
+               <ListHeight>0</ListHeight>
+               <Width>25</Width>
+               <Caption>sNote</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName>FormCollectionGrid</ContainerName>
+               <ContainerSequence>5</ContainerSequence>
+               <DataSource>object.Notes</DataSource>
+               <Binding>1</Binding>
+               <Flags>384</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <MenuName>StdDefault</MenuName>
+               <PropertyClassName>Description</PropertyClassName>
+               <Post301Format />
+               <EffectiveCaption>sNote</EffectiveCaption>
+            </Component>
+            <Component Name="SalesPersonGridCol">
+               <DeviceID>-1</DeviceID>
+               <Type>15</Type>
+               <TabOrder>1</TabOrder>
+               <TopPos>0</TopPos>
+               <LeftPos>0</LeftPos>
+               <Height>0</Height>
+               <ListHeight>0</ListHeight>
+               <Width>15</Width>
+               <Caption>sSalesperson</Caption>
+               <MaxCharacters>0</MaxCharacters>
+               <ContainerName>FormCollectionGrid</ContainerName>
+               <ContainerSequence>1</ContainerSequence>
+               <DataSource>object.SalesPerson</DataSource>
+               <Binding>1</Binding>
+               <Flags>384</Flags>
+               <ReadOnly>False</ReadOnly>
+               <Hidden>False</Hidden>
+               <HelpContextID>0</HelpContextID>
+               <MenuName>StdDefault</MenuName>
+               <PropertyClassName>Slsman</PropertyClassName>
+               <Post301Format />
+               <EffectiveCaption>sSalesperson</EffectiveCaption>
+            </Component>
+         </Components>
+         <Variables>
+            <Variable Name="fds_DataSource">
+               <Value>ue_PFI_SalespersonFCBudgets( ORDERBY(FiscalYear DESC, SalesPerson, FamilyCode) LOCKMODE(Row) )</Value>
+               <Value2 />
+               <Value3 />
+               <Description />
+            </Variable>
+            <Variable Name="InitialCommand">
+               <Value>Refresh</Value>
+               <Value2 />
+               <Value3 />
+               <Description />
+            </Variable>
+         </Variables>
+         <Licenses>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>Entity</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::882b6d28d11a5b9c70cab86ce3efbd2ede9d8833713d724f64b956ab88775b25</ModuleMemberSpec>
+            </License>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>Mobile</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::63aa2c9dc183d9f55740df4b3a9bf420a05d12dc7ec5071cc9a0d3338de1f9b7</ModuleMemberSpec>
+            </License>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>Mobile_MS</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::231fbe6d3ef76427355d2b624f98ed42cfd66e67dc59c0e31c93016eb60a27c2</ModuleMemberSpec>
+            </License>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>MoldingPack</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::ecd7522ccca2dc6d85e7bf9b986f8d4ed62edf19f7d725ba00ba29d8ec864aeb</ModuleMemberSpec>
+            </License>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>Transactional</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::7363869291b6742fda641a34c9d1234a81a246ecea4847103b9cc012ee098245</ModuleMemberSpec>
+            </License>
+            <License>
+               <ModuleName>CustomerForms</ModuleName>
+               <OriginalModuleName>Transactional_MS</OriginalModuleName>
+               <ModuleMemberSpec>!@6893@!::5c246d04ddcea2d02e96da3bd05420a73c49268bc37f2389deca7c954517d24f</ModuleMemberSpec>
+            </License>
+         </Licenses>
+      </Form>
+   </Forms>
+   <Strings Type="7">
+      <String Name="fPFI_PFISalesGoalsByProductsBySalesmanReport" Scope="1" ScopeName="[NULL]">
+         <TableName>Strings</TableName>
+         <String>PFI Sales Goals By Products By Salesman Report</String>
+      </String>
+      <String Name="fPFI_PFISalesPersonFamilyCodeBudgets" Scope="1" ScopeName="[NULL]">
+         <TableName>Strings</TableName>
+         <String>PFI Sales Person Family Code Budgets</String>
+      </String>
+      <String Name="sPFI_ActualOverride" Scope="1" ScopeName="[NULL]">
+         <TableName>Strings</TableName>
+         <String>Actual Override</String>
+      </String>
+   </Strings>
+</FormsAndObjectsExport>

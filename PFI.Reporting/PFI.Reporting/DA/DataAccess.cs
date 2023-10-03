@@ -1,0 +1,295 @@
+﻿using Mongoose.Core.Common;
+using Mongoose.Core.Extensions;
+using Mongoose.IDO;
+using Mongoose.IDO.Protocol;
+using PFI.Reporting.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PFI.Reporting.DA
+{
+    public class DataAccess
+    {
+        private IIDOExtensionClassContext Context { get; set; }
+        public DataAccess(IIDOExtensionClassContext context)
+        {
+            this.Context = context;
+        }
+        public SLFamCodeAll[] SLFamCodeAlls(string SiteRef)
+        {
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            SLFamCodeAll slFamCodeAll;
+            List<SLFamCodeAll> slFamCodeAlls = new List<SLFamCodeAll>();
+
+            try
+            {
+                request = new LoadCollectionRequestData
+                {
+                    IDOName = "SLFamCodeAlls",
+                    PropertyList = new PropertyList("SiteRef, FamilyCode, Description"),
+                    Filter = $"SiteRef = '{SiteRef}'",
+                    OrderBy = "SiteRef, FamilyCode, Description",
+                    RecordCap = 0
+                };
+
+                response = Context.Commands.LoadCollection(request);
+
+                for (int i = 0; i < response.Items.Count; i++)
+                {
+                    slFamCodeAll = new SLFamCodeAll();
+                    slFamCodeAll.SiteRef = response[i, "SiteRef"].Value;
+                    slFamCodeAll.FamilyCode = LowerTrim(response[i, "FamilyCode"].Value);
+                    slFamCodeAll.Description = response[i, "Description"].Value;
+
+                    slFamCodeAlls.Add(slFamCodeAll);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("{0}{1}{2}", "SLFamCodeAlls", Environment.NewLine, ex.Message)));
+            }
+
+            return slFamCodeAlls.ToArray();
+        }
+        public SLSlsmanAll[] SLSlsmanAlls(string SiteRef)
+        {
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            SLSlsmanAll slSlsmanAll;
+            List<SLSlsmanAll> slSlsmanAlls = new List<SLSlsmanAll>();
+
+            try
+            {
+                request = new LoadCollectionRequestData
+                {
+                    IDOName = "SLSlsmanAlls",
+                    PropertyList = new PropertyList("SiteRef, Slsman, DerSlsmanName"),
+                    Filter = $"SiteRef = '{SiteRef}'",
+                    OrderBy = "SiteRef, Slsman, DerSlsmanName",
+                    RecordCap = 0
+                };
+
+                response = Context.Commands.LoadCollection(request);
+
+                for (int i = 0; i < response.Items.Count; i++)
+                {
+                    slSlsmanAll = new SLSlsmanAll();
+                    slSlsmanAll.SiteRef = response[i, "SiteRef"].Value;
+                    slSlsmanAll.Slsman = LowerTrim(response[i, "Slsman"].Value);
+                    slSlsmanAll.DerSlsmanName = response[i, "DerSlsmanName"].Value;
+
+                    slSlsmanAlls.Add(slSlsmanAll);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("{0}{1}{2}", "SLSlsmanAlls", Environment.NewLine, ex.Message)));
+            }
+
+            return slSlsmanAlls.ToArray();
+        }
+        public PFI_FiscalYear[] FiscalYears(string SiteRef)
+        {
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            PFI_FiscalYear ue_PFI_PeriodsAll;
+            List<PFI_FiscalYear> ue_PFI_PeriodsAlls = new List<PFI_FiscalYear>();
+
+            try
+            {
+                request = new LoadCollectionRequestData
+                {
+                    IDOName = "ue_PFI_PeriodsAlls",
+                    PropertyList = new PropertyList("SiteRef, FiscalYear"),
+                    Filter = $"SiteRef = '{SiteRef}'",
+                    OrderBy = "SiteRef, FiscalYear",
+                    Distinct = true,
+                    RecordCap = 0
+                };
+
+                response = Context.Commands.LoadCollection(request);
+
+                for (int i = 0; i < response.Items.Count; i++)
+                {
+                    ue_PFI_PeriodsAll = new PFI_FiscalYear();
+                    ue_PFI_PeriodsAll.SiteRef = response[i, "SiteRef"].Value;
+                    ue_PFI_PeriodsAll.FiscalYear = response[i, "FiscalYear"].GetValue<int>(-1);
+
+                    ue_PFI_PeriodsAlls.Add(ue_PFI_PeriodsAll);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("{0}{1}{2}", "ue_PFI_PeriodsAlls", Environment.NewLine, ex.Message)));
+            }
+
+            return ue_PFI_PeriodsAlls.ToArray();
+        }
+        public ue_PFI_SalespersonFCBudgetAll[] ue_PFI_SalespersonFCBudgetAll(string SiteRef)
+        {
+            //Infor applies record caps to CAs.  I cannot control what the caps are.
+            //So what this does is it loops through pulling from the IDO.  It will pull as many records as 
+            //possible and if the returned record count isn't 0 it will try pulling more based on the RP.
+            //What this means is that we are garanteed at least 2 IDO hits.
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            ue_PFI_SalespersonFCBudgetAll ue_PFI_SalespersonFCBudgetAll;
+            List<ue_PFI_SalespersonFCBudgetAll> ue_PFI_SalespersonFCBudgetAlls = new List<ue_PFI_SalespersonFCBudgetAll>();
+            string filter;
+            string lastRowPointer = null;
+            int batchSize; 
+
+            try
+            {
+                batchSize = 0;
+                do
+                {
+                    if (string.IsNullOrWhiteSpace(lastRowPointer))
+                    {
+                        filter = $"SiteRef = '{SiteRef}'";
+                    }
+                    else
+                    {
+                        //If it isn't the first loop I want to grab the next batch by looking for RP greater than the last RP found.
+                        filter = $"SiteRef = '{SiteRef}' and RowPointer > '{lastRowPointer}'";
+                    }
+
+                    request = new LoadCollectionRequestData
+                    {
+                        IDOName = "ue_PFI_SalespersonFCBudgetAlls",
+                        PropertyList = new PropertyList("SiteRef, FiscalYear, FamilyCode, SalesPerson, Budget, ActualOverride, Notes, RowPointer"),
+                        Filter = filter,
+                        OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
+                        RecordCap = 0 //It means pull back as many records as possible.
+                    };
+
+                    response = Context.Commands.LoadCollection(request);
+
+                    batchSize = response.Items.Count;
+
+                    for (int i = 0; i < response.Items.Count; i++)
+                    {
+                        ue_PFI_SalespersonFCBudgetAll = new ue_PFI_SalespersonFCBudgetAll();
+                        ue_PFI_SalespersonFCBudgetAll.SiteRef = response[i, "SiteRef"].Value;
+                        ue_PFI_SalespersonFCBudgetAll.FiscalYear = response[i, "FiscalYear"].GetValue<int>(-1);
+                        ue_PFI_SalespersonFCBudgetAll.FamilyCode = LowerTrim(response[i, "FamilyCode"].Value);
+                        ue_PFI_SalespersonFCBudgetAll.SalesPerson = LowerTrim(response[i, "SalesPerson"].Value);
+                        ue_PFI_SalespersonFCBudgetAll.Budget = response[i, "Budget"].GetValue<decimal>(-1);
+                        ue_PFI_SalespersonFCBudgetAll.ActualOverride = response[i, "ActualOverride"].GetValue<decimal>(-1);
+                        ue_PFI_SalespersonFCBudgetAll.Notes = response[i, "Notes"].Value;
+
+                        //Want the last rowpointer found in the response so I can get the next batch.
+                        lastRowPointer = response[i, "RowPointer"].Value;
+                        ue_PFI_SalespersonFCBudgetAlls.Add(ue_PFI_SalespersonFCBudgetAll);
+                    }
+                } while (batchSize > 0);
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("{0}{1}{2}", "ue_PFI_SalespersonFCBudgetAll", Environment.NewLine, ex.Message)));
+            }
+
+            return ue_PFI_SalespersonFCBudgetAlls.ToArray();
+        }
+        public ue_PFI_GrossProfitReportSale[] ue_PFI_GrossProfitReportSale(string SiteRef)
+        {
+            //I checked by exporting all ~11k records to excel and making sure rowpointer was unique.
+            //Infor applies record caps to CAs.  I cannot control what the caps are.
+            //So what this does is it loops through pulling from the IDO.  It will pull as many records as 
+            //possible and if the returned record count isn't 0 it will try pulling more based on the RP.
+            //What this means is that we are garanteed at least 2 IDO hits.
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            ue_PFI_GrossProfitReportSale ue_PFI_GrossProfitReportSale;
+            List<ue_PFI_GrossProfitReportSale> ue_PFI_GrossProfitReportSales = new List<ue_PFI_GrossProfitReportSale>();
+            string filter;
+            string lastRowPointer = null;
+            int batchSize;
+
+            try
+            {
+                batchSize = 0;
+                do
+                {
+                    if (string.IsNullOrWhiteSpace(lastRowPointer))
+                    {
+                        filter = $"SiteRef = '{SiteRef}'";
+                    }
+                    else
+                    {
+                        //If it isn't the first loop I want to grab the next batch by looking for RP greater than the last RP found.
+                        filter = $"SiteRef = '{SiteRef}' and RowPointer > '{lastRowPointer}'";
+                    }
+                    
+                    request = new LoadCollectionRequestData
+                    {
+                        IDOName = "ue_PFI_GrossProfitReportSales",
+                        PropertyList = new PropertyList("SiteRef, " +
+                            "CoLine, CoNum, CoRelease, DerExtendedPrice, DerFamilyCode, DerFiscalYear, " +
+                            "DerIsNonItemCoLine, DerItem, DerSalesPerson, DerSalesmanName, InvLine, InvNum, InvoiceDate, " +
+                            "InvSeq, ItemProductCode, Price, QtyInvoiced, SalesPersonOutside, SalesPersonRefNum, " +
+                            "RowPointer"),
+                        Filter = filter,
+                        OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
+                        RecordCap = 0 //It means pull back as many records as possible.
+                    };
+
+                    response = Context.Commands.LoadCollection(request);
+
+                    batchSize = response.Items.Count;
+
+                    for (int i = 0; i < response.Items.Count; i++)
+                    {
+                        ue_PFI_GrossProfitReportSale = new ue_PFI_GrossProfitReportSale();
+                        ue_PFI_GrossProfitReportSale.SiteRef = response[i, "SiteRef"].Value;
+                        ue_PFI_GrossProfitReportSale.DerFamilyCode = LowerTrim(response[i, "DerFamilyCode"].Value);
+                        ue_PFI_GrossProfitReportSale.DerSalesPerson = LowerTrim(response[i, "DerSalesPerson"].Value);
+                        ue_PFI_GrossProfitReportSale.DerFiscalYear = response[i, "DerFiscalYear"].GetValue<int>(-1);
+
+                        ue_PFI_GrossProfitReportSale.CoLine = response[i, "CoLine"].GetValue<int>(-1);
+                        ue_PFI_GrossProfitReportSale.CoNum = response[i, "CoNum"].Value;
+                        ue_PFI_GrossProfitReportSale.CoRelease = response[i, "CoRelease"].GetValue<int>(-1);
+                        ue_PFI_GrossProfitReportSale.DerExtendedPrice = response[i, "DerExtendedPrice"].GetValue<decimal>(-1);
+                        ue_PFI_GrossProfitReportSale.DerIsNonItemCoLine = response[i, "DerIsNonItemCoLine"].GetValue<bool>(false);
+                        ue_PFI_GrossProfitReportSale.DerItem = response[i, "DerItem"].Value;
+                        ue_PFI_GrossProfitReportSale.DerSalesmanName = response[i, "DerSalesmanName"].Value;
+                        ue_PFI_GrossProfitReportSale.InvLine = response[i, "InvLine"].GetValue<long>(-1);
+                        ue_PFI_GrossProfitReportSale.InvNum = response[i, "InvNum"].Value;
+                        ue_PFI_GrossProfitReportSale.InvoiceDate = response[i, "InvoiceDate"].GetValue<DateTime>(DateTime.MinValue);
+                        ue_PFI_GrossProfitReportSale.InvSeq = response[i, "InvSeq"].GetValue<long>(-1);
+                        ue_PFI_GrossProfitReportSale.ItemProductCode = response[i, "ItemProductCode"].Value;
+                        ue_PFI_GrossProfitReportSale.Price = response[i, "Price"].GetValue<decimal>(-1);
+                        ue_PFI_GrossProfitReportSale.QtyInvoiced = response[i, "QtyInvoiced"].GetValue<decimal>(-1);
+                        ue_PFI_GrossProfitReportSale.SalesPersonOutside = response[i, "SalesPersonOutside"].GetValue<bool>(false);
+                        ue_PFI_GrossProfitReportSale.SalesPersonRefNum = response[i, "SalesPersonRefNum"].Value;
+                        
+                        //Want the last rowpointer found in the response so I can get the next batch.
+                        lastRowPointer = response[i, "RowPointer"].Value;
+                        ue_PFI_GrossProfitReportSales.Add(ue_PFI_GrossProfitReportSale);
+                    }
+                } while (batchSize > 0);
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("{0}{1}{2}", "ue_PFI_GrossProfitReportSales", Environment.NewLine, ex.Message)));
+            }
+
+            return ue_PFI_GrossProfitReportSales.ToArray();
+        }
+        private string LowerTrim(string str)
+        {
+            if(!string.IsNullOrWhiteSpace(str))
+            {
+                return str.ToLower().Trim();
+            }
+            else
+            {
+                return string.Empty;
+            } 
+        }
+    }
+}
