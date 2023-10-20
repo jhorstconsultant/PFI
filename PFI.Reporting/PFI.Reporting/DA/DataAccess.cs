@@ -161,7 +161,7 @@ namespace PFI.Reporting.DA
                     request = new LoadCollectionRequestData
                     {
                         IDOName = "ue_PFI_SalespersonFCBudgetAlls",
-                        PropertyList = new PropertyList("SiteRef, FiscalYear, FamilyCode, SalesPerson, Budget, ActualOverride, Notes, RowPointer"),
+                        PropertyList = new PropertyList("SiteRef, FiscalYear, FamilyCode, SalesPerson, Budget, ActualOverride, Notes, RowPointer, FamilyCodeCategory"),
                         Filter = filter,
                         OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
                         RecordCap = 0 //It means pull back as many records as possible.
@@ -181,6 +181,7 @@ namespace PFI.Reporting.DA
                         ue_PFI_SalespersonFCBudgetAll.Budget = response[i, "Budget"].GetValue<decimal>(-1);
                         ue_PFI_SalespersonFCBudgetAll.ActualOverride = response[i, "ActualOverride"].GetValue<decimal>(-1);
                         ue_PFI_SalespersonFCBudgetAll.Notes = response[i, "Notes"].Value;
+                        ue_PFI_SalespersonFCBudgetAll.FamilyCodeCategory = response[i, "FamilyCodeCategory"].Value;
 
                         //Want the last rowpointer found in the response so I can get the next batch.
                         lastRowPointer = response[i, "RowPointer"].Value;

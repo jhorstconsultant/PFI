@@ -53,6 +53,7 @@ namespace PFI.Reporting
                 results.Columns.Add(new DataColumn("CLM_Actual", System.Type.GetType("System.Decimal")));
                 results.Columns.Add(new DataColumn("CLM_SiteRef", System.Type.GetType("System.String")));
                 results.Columns.Add(new DataColumn("RowPointer", System.Type.GetType("System.String")));
+                results.Columns.Add(new DataColumn("CLM_FamilyCodeCategory", System.Type.GetType("System.String")));
 
                 slFamCodeAlls = dataAccess.SLFamCodeAlls(SiteRef);
                 slSlsmanAlls = dataAccess.SLSlsmanAlls(SiteRef);
@@ -118,6 +119,7 @@ namespace PFI.Reporting
                                     row["CLM_Budget"] = finalBudget;
                                     row["CLM_Notes"] = budget.Notes;
                                     row["CLM_ActualOverride"] = budget.ActualOverride;
+                                    row["CLM_FamilyCodeCategory"] = budget.FamilyCodeCategory;
                                 }
                                 else
                                 {

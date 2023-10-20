@@ -17,5 +17,6 @@ namespace PFI.Reporting.Models
         public decimal Budget { get; set; }
         public decimal ActualOverride { get; set; }
         public string Notes { get; set; }
+        public string FamilyCodeCategory { get; set; }
     }
 }
