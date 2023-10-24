@@ -100,6 +100,7 @@
     <Compile Include="Models\ue_PFI_SalespersonFCBudgetAll.cs" />
     <Compile Include="PFI_SalesGoalsByProductsBySalesmanReport.cs" />
     <Compile Include="PFI_GrossProfitReportSales.cs" />
+    <Compile Include="PFI_WeeklySalesReport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
