@@ -5,6 +5,7 @@ using Mongoose.IDO.Protocol;
 using PFI.Reporting.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -280,6 +281,75 @@ namespace PFI.Reporting.DA
             }
 
             return ue_PFI_GrossProfitReportSales.ToArray();
+        }
+        public ue_PFI_FamilyCodeCategories[] ue_PFI_FamilyCodeCategories()
+        {
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            ue_PFI_FamilyCodeCategories ue_PFI_FamilyCodeCategory;
+            string filter;
+            string lastRowPointer = null;
+            int batchSize;
+            DataTable responseDT;
+            string json;
+            List<ue_PFI_FamilyCodeCategories> temp;
+            List<ue_PFI_FamilyCodeCategories> ue_PFI_FamilyCodeCategories;
+
+            ue_PFI_FamilyCodeCategories = new List<ue_PFI_FamilyCodeCategories>();
+
+            try
+            {   
+                batchSize = 0;
+                do
+                {
+                    if (string.IsNullOrWhiteSpace(lastRowPointer))
+                    {
+                        filter = $" 1 = 1 "; //SyteLine's IDO needs a valid filter or it will cause order by errors.
+                    }
+                    else
+                    {
+                        //If it isn't the first loop I want to grab the next batch by looking for RP greater than the last RP found.
+                        filter = $" RowPointer > '{lastRowPointer}' ";
+                    }
+
+                    request = new LoadCollectionRequestData
+                    {
+                        IDOName = "ue_PFI_FamilyCodeCategories",
+                        PropertyList = new PropertyList("FamilyCodeCategory, BookingInvoiceCode, RowPointer"),
+                        Filter = filter,
+                        OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
+                        RecordCap = 0 //It means pull back as many records as possible.
+                    };
+
+                    response = Context.Commands.LoadCollection(request);
+
+                    batchSize = response.Items.Count;
+
+                    //Didn't want to cast to DT then do JSON Serial/Deserial on an empty collection.
+                    if (batchSize > 0)
+                    {
+                        //Brian Antos Method
+                        //He turns the result to a DataTable then into Json then deserializes into a List object
+                        responseDT = new IDODataSet(response).ToDataTable();
+                        json = Newtonsoft.Json.JsonConvert.SerializeObject(responseDT);
+                        temp = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ue_PFI_FamilyCodeCategories>>(json);
+
+                        //Want the last rowpointer found in the response so I can get the next batch.
+                        ue_PFI_FamilyCodeCategory = temp.LastOrDefault();
+
+                        if (ue_PFI_FamilyCodeCategory != null)
+                            lastRowPointer = ue_PFI_FamilyCodeCategory.RowPointer;
+
+                        ue_PFI_FamilyCodeCategories.AddRange(temp);
+                    }                    
+                } while (batchSize > 0);
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("Method:'{0}' {1} Exception:'{2}'", "ue_PFI_FamilyCodeCategories", Environment.NewLine, ex.Message)));
+            }
+
+            return ue_PFI_FamilyCodeCategories.ToArray();
         }
         private string LowerTrim(string str)
         {
