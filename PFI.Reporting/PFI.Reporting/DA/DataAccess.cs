@@ -351,6 +351,38 @@ namespace PFI.Reporting.DA
 
             return ue_PFI_FamilyCodeCategories.ToArray();
         }
+        public string GetCurrentSite()
+        {
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            int batchSize;
+            string site = null;
+
+            try
+            {
+                request = new LoadCollectionRequestData
+                {
+                    IDOName = "SLParms",
+                    PropertyList = new PropertyList("Site"),
+                    RecordCap = 1 
+                };
+
+                response = Context.Commands.LoadCollection(request);
+
+                batchSize = response.Items.Count;
+
+                if (batchSize > 0)
+                {
+                    site = response[0, "Site"].Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("Method:'{0}' {1} Exception:'{2}'", "GetCurrentSite", Environment.NewLine, ex.Message)));
+            }
+
+            return site;
+        }
         private string LowerTrim(string str)
         {
             if(!string.IsNullOrWhiteSpace(str))

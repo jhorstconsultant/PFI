@@ -92,6 +92,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BL\WeeklySalesReportBL.cs" />
     <Compile Include="DA\DataAccess.cs" />
     <Compile Include="Models\SLFamCodeAll.cs" />
     <Compile Include="Models\PFI_FiscalYear.cs" />

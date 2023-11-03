@@ -170,24 +170,6 @@ namespace PFI.Reporting
             {
                 infobar = ex.Message;
             }
-            //finally
-            //{
-            //    if(!string.IsNullOrWhiteSpace(infobar))
-            //    {
-            //        results = new DataTable("Results");
-            //        results.Columns.Add(new DataColumn("FamilyCode", System.Type.GetType("System.String")));
-            //        results.Columns.Add(new DataColumn("FiscalYear", System.Type.GetType("System.Int32")));
-            //        results.Columns.Add(new DataColumn("SalesPerson", System.Type.GetType("System.String")));
-            //        results.Columns.Add(new DataColumn("Budget", System.Type.GetType("System.Decimal")));
-            //        results.Columns.Add(new DataColumn("ActualOverride", System.Type.GetType("System.Decimal")));
-            //        results.Columns.Add(new DataColumn("Notes", System.Type.GetType("System.String")));
-            //        results.Columns.Add(new DataColumn("CLM_Actual", System.Type.GetType("System.Decimal")));
-            //        results.Columns.Add(new DataColumn("CLM_SiteRef", System.Type.GetType("System.String")));
-            //        row = results.NewRow();
-            //        row["Notes"] = infobar;
-            //        results.Rows.Add(row);
-            //    }
-            //}
 
             return results;
         }
