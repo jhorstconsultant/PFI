@@ -12,10 +12,10 @@ using System.Threading.Tasks;
 
 namespace PFI.Reporting.DA
 {
-    public class DataAccess
+    public class PFIDataAccess
     {
         private IIDOExtensionClassContext Context { get; set; }
-        public DataAccess(IIDOExtensionClassContext context)
+        public PFIDataAccess(IIDOExtensionClassContext context)
         {
             this.Context = context;
         }

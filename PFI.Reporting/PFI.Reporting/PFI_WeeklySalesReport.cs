@@ -29,21 +29,22 @@ namespace PFI.Reporting
         [IDOMethod(MethodFlags.CustomLoad)]
         public DataTable PFI_GetWeekendings()
         {
-            DataAccess dataAccess;
+            WeeklySalesReportBL bl;
             DataTable results = null;
             DataRow row;
             DateTime startingWeek = new DateTime(2016, 1, 1);
             DateTime endingWeek = DateTime.Now;
             DateTime currWeek;
 
-            dataAccess = new DataAccess(base.Context); //Context is inherited
+            bl = new WeeklySalesReportBL(base.Context);
+
             results = new DataTable("Results");
             results.Columns.Add(new DataColumn("ue_CLM_Weekending", System.Type.GetType("System.DateTime")));
 
             //We are going to loop through from starting
             //to ending adding 7 days and adding to results.
-            startingWeek = this.GetLastDayOfWeek(startingWeek);
-            endingWeek = this.GetLastDayOfWeek(endingWeek);
+            startingWeek = bl.GetLastDayOfWeek(startingWeek);
+            endingWeek = bl.GetLastDayOfWeek(endingWeek);
             currWeek = endingWeek;
             while (currWeek >= startingWeek) 
             {
@@ -62,15 +63,15 @@ namespace PFI.Reporting
         public DataTable PFI_GetReport()
         {
             WeeklySalesReportBL bl;
-            DataAccess dataAccess;
+            PFIDataAccess dataAccess;
             DataTable results = null;
             
             DateTime startingWeek = new DateTime(2022, 1, 1);
             DateTime endingWeek = DateTime.Now;
             DateTime currWeek;
             
-            dataAccess = new DataAccess(base.Context); //Context is inherited
-            bl = new WeeklySalesReportBL();
+            dataAccess = new PFIDataAccess(base.Context); //Context is inherited
+            bl = new WeeklySalesReportBL(base.Context);
 
             results = bl.SetupDataTable(); //Encapsulated the DT setup for readability.
 
@@ -81,7 +82,7 @@ namespace PFI.Reporting
             currWeek = endingWeek;
             while (currWeek >= startingWeek)
             {
-                results.Rows.Add(bl.CreateNewRow(dataAccess,results, currWeek));
+                results.Rows.Add(bl.CreateNewRow(results, currWeek));
 
                 currWeek = currWeek.AddDays(-7);
             }

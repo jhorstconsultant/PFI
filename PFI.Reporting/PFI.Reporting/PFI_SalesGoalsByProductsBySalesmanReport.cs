@@ -24,7 +24,7 @@ namespace PFI.Reporting
         [IDOMethod(MethodFlags.CustomLoad)]
         public DataTable PFI_GetReport(string SiteRef, int? fiscalYearStarting, int? fiscalYearEnding, string familyCodeStarting, string familyCodeEnding, string salesPersonStarting, string salesPersonEnding)
         {
-            DataAccess dataAccess;
+            PFIDataAccess dataAccess;
             SLFamCodeAll[] slFamCodeAlls;
             SLSlsmanAll[] slSlsmanAlls;
             PFI_FiscalYear[] fiscalYears;
@@ -40,7 +40,7 @@ namespace PFI.Reporting
             
             try
             {
-                dataAccess = new DataAccess(base.Context); //Context is inherited
+                dataAccess = new PFIDataAccess(base.Context); //Context is inherited
                 results = new DataTable("Results");
                 results.Columns.Add(new DataColumn("CLM_FamilyCode", System.Type.GetType("System.String")));
                 results.Columns.Add(new DataColumn("CLM_FamilyCodeDesc", System.Type.GetType("System.String")));
