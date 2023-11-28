@@ -1,5 +1,6 @@
 ﻿using Mongoose.Forms;
 using Mongoose.IDO;
+using Newtonsoft.Json;
 using PFI.Reporting.DA;
 using PFI.Reporting.Models;
 using System;
@@ -18,12 +19,17 @@ namespace PFI.Reporting.BL
             DataAccess = new PFIDataAccess(context); //Context is inherited
             SiteRef = DataAccess.GetCurrentSite();
             Actuals = DataAccess.ue_PFI_GrossProfitReportSale(SiteRef);
+            Bookings = DataAccess.SLCoItems();
+            FamilyCodeCategories = GetFamilyCodeCategories();
         }
         public string SiteRef { get; set; }
         public PFIDataAccess DataAccess { get; set; }
         public ue_PFI_GrossProfitReportSale[] Actuals { get; set; }
+        public SLCoItems[] Bookings { get; set; }
+        public Tuple<string,string>[] FamilyCodeCategories { get; set; }
         public DateTime GetLastDayOfWeek(DateTime date)
         {
+            DateTime result = new DateTime(date.Year, date.Month, date.Day);
             /*
                 Friday	5	
                 Indicates Friday.
@@ -47,10 +53,19 @@ namespace PFI.Reporting.BL
                 Indicates Wednesday.
              */
 
-            DayOfWeek dow = date.DayOfWeek;  //Get the week number enum
+            DayOfWeek dow = result.DayOfWeek;  //Get the week number enum
 
             int diff = 6 - (int)dow; //Since 6 = Sat we want to take 6-the current day of the week.
-            return date.AddDays(diff); //Add the necessary days to get to the end of the week.
+            result = result.AddDays(diff); //Add the necessary days to get to the end of the week.
+            return new DateTime(result.Year, result.Month, result.Day);
+        }
+        public Tuple<string, string>[] GetFamilyCodeCategories()
+        {
+            ue_PFI_SalespersonFCBudgetAll[] budgets;
+
+            budgets = DataAccess.ue_PFI_SalespersonFCBudgetAll(SiteRef);
+
+            return budgets.Select(s=>new Tuple<string,string>(s.FamilyCode,s.FamilyCodeCategory)).Distinct().ToArray();
         }
         public DataTable SetupDataTable()
         {
@@ -74,7 +89,6 @@ namespace PFI.Reporting.BL
 
             return results;
         }
-
         public DataRow CreateNewRow(DataTable dataTable, DateTime week)
         {
             DataRow row;
@@ -100,36 +114,53 @@ namespace PFI.Reporting.BL
 
             return row;
         }
-
         public decimal GetCategoryTotal(ue_PFI_FamilyCodeCategories familyCodeCategory, DateTime week)
         {
-            if (SiteRef.Equals("PRECISIO"))
+            decimal result = -1;
+            List<SLCoItems> debug = new List<SLCoItems>();
+
+            week = new DateTime(week.Year, week.Month, week.Day);
+
+            if (familyCodeCategory.BookingInvoiceCode == "I")
             {
-                if (familyCodeCategory.BookingInvoiceCode.Equals("B"))
-                    return 0;
-                else if (familyCodeCategory.BookingInvoiceCode.Equals("I"))
-                    return 1;
-                else
-                    return 2;
+                result = 0;
+                foreach (string fc in FamilyCodeCategories
+                    .Where(w=>w.Item2.Trim().ToLower().Equals(familyCodeCategory.FamilyCodeCategory.Trim().ToLower()))
+                    .Select(s=>s.Item1.Trim().ToLower()))
+                {
+                    //result += 1;
+                    result += Actuals.Where(w => w.DerFamilyCode.Trim().ToLower().Equals(fc)
+                        && GetLastDayOfWeek(w.InvoiceDate.Date) == week.Date
+                        ).Select(s => s.DerExtendedPrice).Sum();
+                }
             }
-            else if(SiteRef.Equals("CHECKERS"))
+            else if (familyCodeCategory.BookingInvoiceCode == "B")
             {
-                if (familyCodeCategory.BookingInvoiceCode.Equals("B"))
-                    return 10;
-                else if (familyCodeCategory.BookingInvoiceCode.Equals("I"))
-                    return 11;
-                else
-                    return 12;
+                result = 0;
+
+                result += Bookings.Where(w =>
+                        w.ue_PFI_FamilyCodeCategory.Trim().ToLower().Equals(familyCodeCategory.FamilyCodeCategory.Trim().ToLower())
+                        && GetLastDayOfWeek(w.CoOrderDate).Date == week.Date
+                        )
+                    .Select(s => s.DerNetPrice).Sum();
             }
-            else 
+            else
             {
-                if (familyCodeCategory.BookingInvoiceCode.Equals("B"))
-                    return 40;
-                else if (familyCodeCategory.BookingInvoiceCode.Equals("I"))
-                    return 41;
+                if (SiteRef.Equals("PRECISIO"))
+                {
+                    result = 2;
+                }
+                else if (SiteRef.Equals("CHECKERS"))
+                {
+                    result = 12;
+                }
                 else
-                    return 42;
+                {
+                    result = 42;
+                }
             }
+
+            return result;
         }
     }
 }

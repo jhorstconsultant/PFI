@@ -63,14 +63,12 @@ namespace PFI.Reporting
         public DataTable PFI_GetReport()
         {
             WeeklySalesReportBL bl;
-            PFIDataAccess dataAccess;
             DataTable results = null;
             
-            DateTime startingWeek = new DateTime(2022, 1, 1);
+            DateTime startingWeek = new DateTime(2023, 3, 21);
             DateTime endingWeek = DateTime.Now;
             DateTime currWeek;
             
-            dataAccess = new PFIDataAccess(base.Context); //Context is inherited
             bl = new WeeklySalesReportBL(base.Context);
 
             results = bl.SetupDataTable(); //Encapsulated the DT setup for readability.

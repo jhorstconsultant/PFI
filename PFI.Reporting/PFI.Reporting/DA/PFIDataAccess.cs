@@ -224,7 +224,7 @@ namespace PFI.Reporting.DA
                     else
                     {
                         //If it isn't the first loop I want to grab the next batch by looking for RP greater than the last RP found.
-                        filter = $"SiteRef = '{SiteRef}' and RowPointer > '{lastRowPointer}'";
+                        filter = $"SiteRef = '{SiteRef}' and RowPointer > '{lastRowPointer}' ";
                     }
                     
                     request = new LoadCollectionRequestData
@@ -350,6 +350,84 @@ namespace PFI.Reporting.DA
             }
 
             return ue_PFI_FamilyCodeCategories.ToArray();
+        }
+        public SLCoItems[] SLCoItems()
+        {
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            SLCoItems slCoItem;
+            string filter;
+            string lastRowPointer = null;
+            int batchSize;
+            List<SLCoItems> slCoItems;
+
+            slCoItems = new List<SLCoItems>();
+
+            try
+            {
+                batchSize = 0;
+                do
+                {
+                    if (string.IsNullOrWhiteSpace(lastRowPointer))
+                    {
+                        filter = $" 1 = 1 "; //SyteLine's IDO needs a valid filter or it will cause order by errors.
+                    }
+                    else
+                    {
+                        //If it isn't the first loop I want to grab the next batch by looking for RP greater than the last RP found.
+                        filter = $" RowPointer > '{lastRowPointer}' ";
+                    }
+
+                    request = new LoadCollectionRequestData
+                    {
+                        IDOName = "ue_PFI_SLCoItems",
+                        PropertyList = new PropertyList("CoNum, CoOrderDate, Item, Description, QtyOrderedConv, PriceConv, DerNetPrice" +
+                                        ", CostConv, DerDomCurrCode, DerQtyReadyConv, DerQtyRsvdConv, DerQtyPickedConv, DerQtyPackedConv" +
+                                        ", DerQtyShippedConv, DerQtyInvoicedConv, RowPointer, ue_ItemAllFamilyCode, ue_PFI_FamilyCodeCategory "),
+                        Filter = filter,
+                        OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
+                        RecordCap = 0 //It means pull back as many records as possible.
+                    };
+
+                    response = Context.Commands.LoadCollection(request);
+
+                    batchSize = response.Items.Count;
+
+                    for (int i = 0; i < response.Items.Count; i++)
+                    {
+                        slCoItem = new SLCoItems();
+
+                        slCoItem.CoNum = response[i, "CoNum"].Value;
+                        slCoItem.CoOrderDate = response[i, "CoOrderDate"].GetValue<DateTime>(new DateTime(1900,1,1));
+                        slCoItem.Item = response[i, "Item"].Value;
+                        slCoItem.Description = response[i, "Description"].Value;
+                        slCoItem.QtyOrderedConv = response[i, "QtyOrderedConv"].GetValue<decimal>(0);
+                        slCoItem.PriceConv = response[i, "PriceConv"].GetValue<decimal>(0);
+                        slCoItem.DerNetPrice = response[i, "DerNetPrice"].GetValue<decimal>(0);
+                        slCoItem.CostConv = response[i, "CostConv"].GetValue<decimal>(0);
+                        slCoItem.DerDomCurrCode = response[i, "DerDomCurrCode"].Value;
+                        slCoItem.DerQtyReadyConv = response[i, "DerQtyReadyConv"].GetValue<decimal>(0);
+                        slCoItem.DerQtyRsvdConv = response[i, "DerQtyRsvdConv"].GetValue<decimal>(0);
+                        slCoItem.DerQtyPickedConv = response[i, "DerQtyPickedConv"].GetValue<decimal>(0);
+                        slCoItem.DerQtyPackedConv = response[i, "DerQtyPackedConv"].GetValue<decimal>(0);
+                        slCoItem.DerQtyShippedConv = response[i, "DerQtyShippedConv"].GetValue<decimal>(0);
+                        slCoItem.DerQtyInvoicedConv = response[i, "DerQtyInvoicedConv"].GetValue<decimal>(0);
+                        slCoItem.RowPointer = response[i, "RowPointer"].Value;
+                        slCoItem.ue_ItemAllFamilyCode = response[i, "ue_ItemAllFamilyCode"].Value;
+                        slCoItem.ue_PFI_FamilyCodeCategory = response[i, "ue_PFI_FamilyCodeCategory"].Value;
+
+                        lastRowPointer = slCoItem.RowPointer;
+                        slCoItems.Add(slCoItem);
+                    }
+
+                } while (batchSize > 0);
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("Method:'{0}' {1} Exception:'{2}'", "SLCoItems", Environment.NewLine, ex.Message)));
+            }
+
+            return slCoItems.ToArray();
         }
         public string GetCurrentSite()
         {
