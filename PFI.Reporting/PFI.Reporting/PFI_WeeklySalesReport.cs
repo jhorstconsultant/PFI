@@ -60,13 +60,13 @@ namespace PFI.Reporting
 
 
         [IDOMethod(MethodFlags.CustomLoad)]
-        public DataTable PFI_GetReport()
+        public DataTable PFI_GetReport(DateTime startingWeek, DateTime endingWeek)
         {
             WeeklySalesReportBL bl;
             DataTable results = null;
             
-            DateTime startingWeek = new DateTime(2023, 3, 21);
-            DateTime endingWeek = DateTime.Now;
+            //startingWeek = new DateTime(2023, 3, 21);
+            //endingWeek = DateTime.Now;
             DateTime currWeek;
             
             bl = new WeeklySalesReportBL(base.Context);
