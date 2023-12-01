@@ -74,18 +74,16 @@ namespace PFI.Reporting.BL
             results = new DataTable("Results");
             results.Columns.Add(new DataColumn("ue_CLM_Weekending", System.Type.GetType("System.DateTime")));
 
-            results.Columns.Add(new DataColumn("ue_CLM_AirlessBlasting", System.Type.GetType("System.Decimal")));
-            results.Columns.Add(new DataColumn("ue_CLM_Blasting", System.Type.GetType("System.Decimal")));
-            results.Columns.Add(new DataColumn("ue_CLM_BlastingSupplies", System.Type.GetType("System.Decimal")));
-            results.Columns.Add(new DataColumn("ue_CLM_Chemtrol", System.Type.GetType("System.Decimal")));
-            results.Columns.Add(new DataColumn("ue_CLM_ChemtrolWaste", System.Type.GetType("System.Decimal")));
-            results.Columns.Add(new DataColumn("ue_CLM_FinishingEquipment", System.Type.GetType("System.Decimal")));
-            results.Columns.Add(new DataColumn("ue_CLM_FinishingSupplies", System.Type.GetType("System.Decimal")));
-            results.Columns.Add(new DataColumn("ue_CLM_MiscEquip", System.Type.GetType("System.Decimal")));
-            results.Columns.Add(new DataColumn("ue_CLM_Rosler", System.Type.GetType("System.Decimal")));
             results.Columns.Add(new DataColumn("ue_CLM_Tumbling", System.Type.GetType("System.Decimal")));
-            results.Columns.Add(new DataColumn("ue_CLM_WashingEquipment", System.Type.GetType("System.Decimal")));
-            results.Columns.Add(new DataColumn("ue_CLM_ZeroClemco", System.Type.GetType("System.Decimal")));
+            results.Columns.Add(new DataColumn("ue_CLM_Blasting", System.Type.GetType("System.Decimal")));
+            results.Columns.Add(new DataColumn("ue_CLM_Chemtrol", System.Type.GetType("System.Decimal")));
+            results.Columns.Add(new DataColumn("ue_CLM_VibratoryMedia", System.Type.GetType("System.Decimal")));
+            results.Columns.Add(new DataColumn("ue_CLM_BlastMedia", System.Type.GetType("System.Decimal")));
+            results.Columns.Add(new DataColumn("ue_CLM_SpareParts", System.Type.GetType("System.Decimal")));
+            results.Columns.Add(new DataColumn("ue_CLM_SupplierCompounds", System.Type.GetType("System.Decimal")));
+            results.Columns.Add(new DataColumn("ue_CLM_VibratoryEquipment", System.Type.GetType("System.Decimal")));
+            results.Columns.Add(new DataColumn("ue_CLM_BlastEquipment", System.Type.GetType("System.Decimal")));
+            results.Columns.Add(new DataColumn("ue_CLM_Equipment", System.Type.GetType("System.Decimal")));
 
             return results;
         }
@@ -99,18 +97,16 @@ namespace PFI.Reporting.BL
             row = dataTable.NewRow();
             row["ue_CLM_Weekending"] = week.Date;
 
-            row["ue_CLM_AirlessBlasting"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Airless Blasting")).FirstOrDefault(), week);
-            row["ue_CLM_Blasting"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Blasting")).FirstOrDefault(), week);
-            row["ue_CLM_BlastingSupplies"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Blast Supplies")).FirstOrDefault(), week);
-            row["ue_CLM_Chemtrol"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Chemtrol")).FirstOrDefault(), week);
-            row["ue_CLM_ChemtrolWaste"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Chemtrol Waste")).FirstOrDefault(), week);
-            row["ue_CLM_FinishingEquipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Finishing Equipment")).FirstOrDefault(), week);
-            row["ue_CLM_FinishingSupplies"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Finishing Supplies")).FirstOrDefault(), week);
-            row["ue_CLM_MiscEquip"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Misc Equip.")).FirstOrDefault(), week);
-            row["ue_CLM_Rosler"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Rosler")).FirstOrDefault(), week);
-            row["ue_CLM_Tumbling"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Tumbling")).FirstOrDefault(), week);
-            row["ue_CLM_WashingEquipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Washing Equipment")).FirstOrDefault(), week);
-            row["ue_CLM_ZeroClemco"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("Zero / Clemco")).FirstOrDefault(), week);
+            row["ue_CLM_Tumbling"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("TUMBLING")).FirstOrDefault(), week);
+            row["ue_CLM_Blasting"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("BLASTING")).FirstOrDefault(), week);
+            row["ue_CLM_Chemtrol"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("CHEMTROL")).FirstOrDefault(), week);
+            row["ue_CLM_VibratoryMedia"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("VIBRATORY MEDIA")).FirstOrDefault(), week);
+            row["ue_CLM_BlastMedia"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("BLAST MEDIA")).FirstOrDefault(), week);
+            row["ue_CLM_SpareParts"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("SPARE PARTS")).FirstOrDefault(), week);
+            row["ue_CLM_SupplierCompounds"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("SUPPLIER COMPOUNDS")).FirstOrDefault(), week);
+            row["ue_CLM_VibratoryEquipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("VIBRATORY EQUIPMENT")).FirstOrDefault(), week);
+            row["ue_CLM_BlastEquipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("BLAST EQUIPMENT")).FirstOrDefault(), week);
+            row["ue_CLM_Equipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("EQUIPMENT")).FirstOrDefault(), week);
 
             return row;
         }
@@ -134,7 +130,7 @@ namespace PFI.Reporting.BL
                         ).Select(s => s.DerExtendedPrice).Sum();
                 }
             }
-            else if (familyCodeCategory.BookingInvoiceCode == "B")
+            else
             {
                 result = 0;
 
@@ -143,21 +139,6 @@ namespace PFI.Reporting.BL
                         && GetLastDayOfWeek(w.CoOrderDate).Date == week.Date
                         )
                     .Select(s => s.DerNetPrice).Sum();
-            }
-            else
-            {
-                if (SiteRef.Equals("PRECISIO"))
-                {
-                    result = 2;
-                }
-                else if (SiteRef.Equals("CHECKERS"))
-                {
-                    result = 12;
-                }
-                else
-                {
-                    result = 42;
-                }
             }
 
             return result;
