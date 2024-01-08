@@ -7,14 +7,16 @@ using System.Threading.Tasks;
 namespace PFI.Reporting.Models
 {
     //ue_PFI_SalespersonFCBudgetAlls
-    public class ue_PFI_SalespersonFCBudgetAll
+    public class ue_PFI_SPFCActOverrideAll
     {
         public string SiteRef { get; set; }
         public decimal CLM_Actual { get;set; }
         public int FiscalYear { get; set; }
+        public int FiscalPeriod { get; set; }
+        public DateTime FiscalPeriodEnd { get; set; }
         public string FamilyCode { get; set; }
         public string SalesPerson { get; set; }
-        public decimal Budget { get; set; }
+        public decimal ActualOverride { get; set; }
         public string Notes { get; set; }
         public string FamilyCodeCategory { get; set; }
     }

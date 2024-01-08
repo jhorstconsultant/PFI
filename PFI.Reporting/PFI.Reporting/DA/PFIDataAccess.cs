@@ -162,7 +162,7 @@ namespace PFI.Reporting.DA
                     request = new LoadCollectionRequestData
                     {
                         IDOName = "ue_PFI_SalespersonFCBudgetAlls",
-                        PropertyList = new PropertyList("SiteRef, FiscalYear, FamilyCode, SalesPerson, Budget, ActualOverride, Notes, RowPointer, FamilyCodeCategory"),
+                        PropertyList = new PropertyList("SiteRef, FiscalYear, FamilyCode, SalesPerson, Budget, Notes, RowPointer, FamilyCodeCategory"),
                         Filter = filter,
                         OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
                         RecordCap = 0 //It means pull back as many records as possible.
@@ -180,7 +180,6 @@ namespace PFI.Reporting.DA
                         ue_PFI_SalespersonFCBudgetAll.FamilyCode = LowerTrim(response[i, "FamilyCode"].Value);
                         ue_PFI_SalespersonFCBudgetAll.SalesPerson = LowerTrim(response[i, "SalesPerson"].Value);
                         ue_PFI_SalespersonFCBudgetAll.Budget = response[i, "Budget"].GetValue<decimal>(-1);
-                        ue_PFI_SalespersonFCBudgetAll.ActualOverride = response[i, "ActualOverride"].GetValue<decimal>(-1);
                         ue_PFI_SalespersonFCBudgetAll.Notes = response[i, "Notes"].Value;
                         ue_PFI_SalespersonFCBudgetAll.FamilyCodeCategory = response[i, "FamilyCodeCategory"].Value;
 
@@ -196,6 +195,73 @@ namespace PFI.Reporting.DA
             }
 
             return ue_PFI_SalespersonFCBudgetAlls.ToArray();
+        }
+        public ue_PFI_SPFCActOverrideAll[] ue_PFI_SPFCActOverrideAll(string SiteRef)
+        {
+            //Infor applies record caps to CAs.  I cannot control what the caps are.
+            //So what this does is it loops through pulling from the IDO.  It will pull as many records as 
+            //possible and if the returned record count isn't 0 it will try pulling more based on the RP.
+            //What this means is that we are garanteed at least 2 IDO hits.
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            ue_PFI_SPFCActOverrideAll ue_PFI_SPFCActOverrideAll;
+            List<ue_PFI_SPFCActOverrideAll> ue_PFI_SPFCActOverrideAlls = new List<ue_PFI_SPFCActOverrideAll>();
+            string filter;
+            string lastRowPointer = null;
+            int batchSize;
+
+            try
+            {
+                batchSize = 0;
+                do
+                {
+                    if (string.IsNullOrWhiteSpace(lastRowPointer))
+                    {
+                        filter = $"SiteRef = '{SiteRef}'";
+                    }
+                    else
+                    {
+                        //If it isn't the first loop I want to grab the next batch by looking for RP greater than the last RP found.
+                        filter = $"SiteRef = '{SiteRef}' and RowPointer > '{lastRowPointer}'";
+                    }
+
+                    request = new LoadCollectionRequestData
+                    {
+                        IDOName = "ue_PFI_SPFCActOverrideAlls",
+                        PropertyList = new PropertyList("SiteRef, FiscalYear, FiscalPeriod, FamilyCode, FamilyCodeCategory, SalesPerson, ActualOverride, Notes, RowPointer"),
+                        Filter = filter,
+                        OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
+                        RecordCap = 0 //It means pull back as many records as possible.
+                    };
+
+                    response = Context.Commands.LoadCollection(request);
+
+                    batchSize = response.Items.Count;
+
+                    for (int i = 0; i < response.Items.Count; i++)
+                    {
+                        ue_PFI_SPFCActOverrideAll = new ue_PFI_SPFCActOverrideAll();
+                        ue_PFI_SPFCActOverrideAll.SiteRef = response[i, "SiteRef"].Value;
+                        ue_PFI_SPFCActOverrideAll.FiscalYear = response[i, "FiscalYear"].GetValue<int>(-1);
+                        ue_PFI_SPFCActOverrideAll.FiscalPeriod = response[i, "FiscalPeriod"].GetValue<int>(-1);
+                        ue_PFI_SPFCActOverrideAll.FamilyCode = LowerTrim(response[i, "FamilyCode"].Value);
+                        ue_PFI_SPFCActOverrideAll.SalesPerson = LowerTrim(response[i, "SalesPerson"].Value);
+                        ue_PFI_SPFCActOverrideAll.ActualOverride = response[i, "ActualOverride"].GetValue<decimal>(-1);
+                        ue_PFI_SPFCActOverrideAll.Notes = response[i, "Notes"].Value;
+                        ue_PFI_SPFCActOverrideAll.FamilyCodeCategory = response[i, "FamilyCodeCategory"].Value;
+
+                        //Want the last rowpointer found in the response so I can get the next batch.
+                        lastRowPointer = response[i, "RowPointer"].Value;
+                        ue_PFI_SPFCActOverrideAlls.Add(ue_PFI_SPFCActOverrideAll);
+                    }
+                } while (batchSize > 0);
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("{0}{1}{2}", "ue_PFI_SPFCActOverrideAll", Environment.NewLine, ex.Message)));
+            }
+
+            return ue_PFI_SPFCActOverrideAlls.ToArray();
         }
         public ue_PFI_GrossProfitReportSale[] ue_PFI_GrossProfitReportSale(string SiteRef)
         {
@@ -428,6 +494,93 @@ namespace PFI.Reporting.DA
             }
 
             return slCoItems.ToArray();
+        }
+        public FiscalYearPeriods[] FiscalYearPeriods()
+        {
+            //Infor applies record caps to CAs.  I cannot control what the caps are.
+            //So what this does is it loops through pulling from the IDO.  It will pull as many records as 
+            //possible and if the returned record count isn't 0 it will try pulling more based on the RP.
+            //What this means is that we are garanteed at least 2 IDO hits.
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            FiscalYearPeriods fiscalYearPeriod;
+            List<FiscalYearPeriods> fiscalYearPeriods = new List<FiscalYearPeriods>();
+            string filter;
+            string lastRowPointer = null;
+            int batchSize;
+
+            try
+            {
+                batchSize = 0;
+                do
+                {
+                    if (string.IsNullOrWhiteSpace(lastRowPointer))
+                    {
+                        filter = $" 1 = 1";
+                    }
+                    else
+                    {
+                        //If it isn't the first loop I want to grab the next batch by looking for RP greater than the last RP found.
+                        filter = $" RowPointer > '{lastRowPointer}' ";
+                    }
+
+                    request = new LoadCollectionRequestData
+                    {
+                        IDOName = "SLPeriods",
+                        PropertyList = new PropertyList("FiscalYear, PerStart_1, PerEnd_1, PerEnd_10, PerEnd_11, PerEnd_12, PerEnd_13, PerEnd_2, PerEnd_3, PerEnd_4, PerEnd_5, PerEnd_6, PerEnd_7, PerEnd_8, PerEnd_9, PerStart_10, PerStart_11, PerStart_12, PerStart_13, PerStart_2, PerStart_3, PerStart_4, PerStart_5, PerStart_6, PerStart_7, PerStart_8, PerStart_9, RowPointer"),
+                        Filter = filter,
+                        OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
+                        RecordCap = 0 //It means pull back as many records as possible.
+                    };
+
+                    response = Context.Commands.LoadCollection(request);
+
+                    batchSize = response.Items.Count;
+
+                    for (int i = 0; i < response.Items.Count; i++)
+                    {
+                        fiscalYearPeriod = new FiscalYearPeriods();
+                        fiscalYearPeriod.FiscalYear  = response[i, "FiscalYear"].GetValue<int>(-1);
+                        fiscalYearPeriod.EndPeriod1  = response[i, "PerEnd_1"].GetValue<DateTime>(new DateTime(1900,1,1));
+                        fiscalYearPeriod.EndPeriod2  = response[i, "PerEnd_2"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod3  = response[i, "PerEnd_3"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod4  = response[i, "PerEnd_4"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod5  = response[i, "PerEnd_5"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod6  = response[i, "PerEnd_6"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod7  = response[i, "PerEnd_7"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod8  = response[i, "PerEnd_8"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod9  = response[i, "PerEnd_9"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod10 = response[i, "PerEnd_10"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod11 = response[i, "PerEnd_11"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod12 = response[i, "PerEnd_12"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.EndPeriod13 = response[i, "PerEnd_13"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+
+                        fiscalYearPeriod.StartPeriod1 = response[i, "PerStart_1"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod2 = response[i, "PerStart_2"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod3 = response[i, "PerStart_3"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod4 = response[i, "PerStart_4"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod5 = response[i, "PerStart_5"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod6 = response[i, "PerStart_6"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod7 = response[i, "PerStart_7"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod8 = response[i, "PerStart_8"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod9 = response[i, "PerStart_9"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod10 = response[i, "PerStart_10"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod11 = response[i, "PerStart_11"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod12 = response[i, "PerStart_12"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+                        fiscalYearPeriod.StartPeriod13 = response[i, "PerStart_13"].GetValue<DateTime>(new DateTime(1900, 1, 1));
+
+                        //Want the last rowpointer found in the response so I can get the next batch.
+                        lastRowPointer = response[i, "RowPointer"].Value;
+                        fiscalYearPeriods.Add(fiscalYearPeriod);
+                    }
+                } while (batchSize > 0);
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("{0}{1}{2}", "fiscalYearPeriods", Environment.NewLine, ex.Message)));
+            }
+
+            return fiscalYearPeriods.ToArray();
         }
         public string GetCurrentSite()
         {
