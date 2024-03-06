@@ -24,6 +24,23 @@ namespace PFI.Reporting.BL
             Bookings = DataAccess.SLCoItems();
             FamilyCodeCategories = GetFamilyCodeCategories();
         }
+
+        public void SetSalesPersonRange(string startingSalesPerson, string endingSalesPerson)
+        {
+            SalesPersions = DataAccess.SLSlsmanAlls(SiteRef);
+            StartingSalesPerson = startingSalesPerson;
+            EndingSalesPerson = endingSalesPerson;
+
+            if (string.IsNullOrWhiteSpace(StartingSalesPerson))
+                StartingSalesPerson = SalesPersions.Select(s => s.Slsman).Min();
+
+            if (string.IsNullOrWhiteSpace(EndingSalesPerson))
+                EndingSalesPerson = SalesPersions.Select(s => s.Slsman).Max();
+        }
+
+        public SLSlsmanAll[] SalesPersions { get; set; }
+        public string StartingSalesPerson { get; set; }
+        public string EndingSalesPerson { get; set; }
         public string SiteRef { get; set; }
         public PFIDataAccess DataAccess { get; set; }
         public FiscalYearPeriods[] FiscalYearPeriods { get; set; }
@@ -123,9 +140,13 @@ namespace PFI.Reporting.BL
 
             //Check for an override senario.  Per Sherry B if an override exists even booking driven
             //  family code categories will be overridden.  
-            actualOverride = ActualOverrides.Where(w => 
-                w.FamilyCodeCategory.Trim().ToLower().Equals(familyCodeCategory.FamilyCodeCategory.Trim().ToLower())
-                && w.FiscalPeriodEnd == week).Select(s => s.ActualOverride).Sum();
+            actualOverride = ActualOverrides
+                .Where(w => 
+                    w.FamilyCodeCategory.Trim().ToLower().Equals(familyCodeCategory.FamilyCodeCategory.Trim().ToLower())
+                    && w.FiscalPeriodEnd == week)
+                .Where(w => w.SalesPerson.CompareTo(StartingSalesPerson) >= 0)
+                .Where(w => w.SalesPerson.CompareTo(EndingSalesPerson) <= 0)
+                .Select(s => s.ActualOverride).Sum();
 
             if (actualOverride.HasValue == true && actualOverride > 0)
             {
@@ -138,19 +159,27 @@ namespace PFI.Reporting.BL
                     .Where(w => w.Item2.Trim().ToLower().Equals(familyCodeCategory.FamilyCodeCategory.Trim().ToLower()))
                     .Select(s => s.Item1.Trim().ToLower()))
                 {
-                    result += Actuals.Where(w => w.DerFamilyCode.Trim().ToLower().Equals(fc)
-                        && GetLastDayOfWeek(w.InvoiceDate.Date) == week.Date
-                        ).Select(s => s.DerExtendedPrice).Sum();
+                    result += Actuals
+                        .Where(w => w.DerFamilyCode.Trim().ToLower().Equals(fc)
+                            && GetLastDayOfWeek(w.InvoiceDate.Date) == week.Date)
+                        .Where(w => w.DerSalesPerson.CompareTo(StartingSalesPerson) >= 0)
+                        .Where(w => w.DerSalesPerson.CompareTo(EndingSalesPerson) <= 0)
+                        .Select(s => s.DerExtendedPrice)
+                        .Sum();
                 }
             }
             else
             {
                 result = 0;
 
-                result = Bookings.Where(w => w.ue_PFI_FamilyCodeCategory.Trim().ToLower().Equals(familyCodeCategory.FamilyCodeCategory.Trim().ToLower())
-                        && GetLastDayOfWeek(w.CoOrderDate).Date == week.Date
+                result = Bookings
+                        .Where(w => 
+                            w.ue_PFI_FamilyCodeCategory.Trim().ToLower().Equals(familyCodeCategory.FamilyCodeCategory.Trim().ToLower())
+                            && GetLastDayOfWeek(w.CoOrderDate).Date == week.Date
                         )
-                    .Select(s => s.DerNetPrice).Sum();
+                        .Where(w => w.CoSlsman.CompareTo(StartingSalesPerson) >= 0)
+                        .Where(w => w.CoSlsman.CompareTo(EndingSalesPerson) <= 0)
+                        .Select(s => s.DerNetPrice).Sum();
             }
 
             return result;

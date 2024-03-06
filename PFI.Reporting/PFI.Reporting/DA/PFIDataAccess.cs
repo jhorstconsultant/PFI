@@ -449,7 +449,8 @@ namespace PFI.Reporting.DA
                         IDOName = "ue_PFI_SLCoItems",
                         PropertyList = new PropertyList("CoNum, CoOrderDate, Item, Description, QtyOrderedConv, PriceConv, DerNetPrice" +
                                         ", CostConv, DerDomCurrCode, DerQtyReadyConv, DerQtyRsvdConv, DerQtyPickedConv, DerQtyPackedConv" +
-                                        ", DerQtyShippedConv, DerQtyInvoicedConv, RowPointer, ue_ItemAllFamilyCode, ue_PFI_FamilyCodeCategory "),
+                                        ", DerQtyShippedConv, DerQtyInvoicedConv, RowPointer, ue_ItemAllFamilyCode, ue_PFI_FamilyCodeCategory " +
+                                        ", CoSlsman "),
                         Filter = filter,
                         OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
                         RecordCap = 0 //It means pull back as many records as possible.
@@ -481,6 +482,7 @@ namespace PFI.Reporting.DA
                         slCoItem.RowPointer = response[i, "RowPointer"].Value;
                         slCoItem.ue_ItemAllFamilyCode = response[i, "ue_ItemAllFamilyCode"].Value;
                         slCoItem.ue_PFI_FamilyCodeCategory = response[i, "ue_PFI_FamilyCodeCategory"].Value;
+                        slCoItem.CoSlsman = response[i, "CoSlsman"].Value;
 
                         lastRowPointer = slCoItem.RowPointer;
                         slCoItems.Add(slCoItem);

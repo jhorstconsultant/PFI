@@ -2,6 +2,7 @@
 using Mongoose.Forms;
 using Mongoose.IDO;
 using Mongoose.IDO.Metadata;
+using Newtonsoft.Json;
 using PFI.Reporting.DA;
 using PFI.Reporting.Models;
 using System;
@@ -186,14 +187,30 @@ namespace PFI.Reporting.BL
             PFI_FiscalYear[] fiscalYears;
             SLFamCodeAll[] slFamCodeAlls;
             SLSlsmanAll[] slSlsmanAlls;
-            AmountByPeriod actuals;
-            AmountByPeriod ytdGoals;
-            AmountByPeriod ytdActuals;
+            AmountByPeriod amountByPeriod;
+            AmountByPeriod actual;
+            AmountByPeriod ytdGoal;
+            AmountByPeriod ytdActual;
+            ue_PFI_GrossProfitReportSale[] actuals; 
+            ue_PFI_SPFCActOverrideAll[] actualOverrides;
+            FiscalYearPeriods[] fiscalYearPeriods;
+            ue_PFI_SalespersonFCBudgetAll[] budgets;
 
             results = SetupDataTable("PFI_GetFCDetailReport");
             fiscalYears = DataAccess.FiscalYears(SiteRef);
             slFamCodeAlls = DataAccess.SLFamCodeAlls(SiteRef);
             slSlsmanAlls = DataAccess.SLSlsmanAlls(SiteRef);
+
+            //Needed for Actuals
+            fiscalYearPeriods = DataAccess.FiscalYearPeriods()
+                .Where(w => w.FiscalYear >= fiscalYearStarting)
+                .Where(w => w.FiscalYear <= fiscalYearEnding)
+                .ToArray(); //TODO - Pass in parameters so it gets results by fy
+            actuals = DataAccess.ue_PFI_GrossProfitReportSale(SiteRef);     //TODO - Pass in parameters so it gets results by fc and sp.
+            actualOverrides = DataAccess.ue_PFI_SPFCActOverrideAll(SiteRef);//TODO - Pass in parameters so it gets results by fc and sp.
+            
+            //Needed for YTD Goals
+            budgets = DataAccess.ue_PFI_SalespersonFCBudgetAll(SiteRef);
 
             //Need to default any parameters which are null
             if (fiscalYearEnding.HasValue == false)
@@ -226,28 +243,74 @@ namespace PFI.Reporting.BL
                     .OrderBy(o => o.FamilyCode))
                 {
                     //Loop through each salesperson and get a grand total accross all of them.
-                    actuals = new AmountByPeriod();
-                    ytdGoals  = new AmountByPeriod();
-                    ytdActuals  = new AmountByPeriod();
+                    actual = new AmountByPeriod();
+                    ytdGoal  = new AmountByPeriod();
+                    ytdActual  = new AmountByPeriod();
                     foreach (SLSlsmanAll sp in slSlsmanAlls
                         .Where(w => w.Slsman.CompareTo(salesPersonStarting) >= 0)
                         .Where(w => w.Slsman.CompareTo(salesPersonEnding) <= 0)
                         .OrderBy(o => o.Slsman))
                     {
-                        actuals = this.SumAmountByPeriod(actuals, GetActuals(SiteRef, fy.FiscalYear, fc.FamilyCode, sp.Slsman));
-                        ytdGoals   = this.SumAmountByPeriod(ytdGoals, GetYTDGoals(SiteRef, fy.FiscalYear, fc.FamilyCode, sp.Slsman)  );
-                        ytdActuals = this.SumAmountByPeriod(ytdActuals, GetYTDActuals(SiteRef, fy.FiscalYear, fc.FamilyCode, sp.Slsman));
+                        //In an effort to increase readability I am first setting the new amount by period in a temp variable then sending it into the sum function.
+                        //Actuals
+                        amountByPeriod = GetActuals(SiteRef, fy.FiscalYear, fc.FamilyCode, sp.Slsman
+                            , actuals, actualOverrides, fiscalYearPeriods);
+                        actual    = this.SumAmountByPeriod(actual, amountByPeriod);
+
+                        //Year to Date Goals
+                        amountByPeriod = GetYTDGoals(SiteRef, fy.FiscalYear, fc.FamilyCode, sp.Slsman
+                            , budgets);
+                        ytdGoal   = this.SumAmountByPeriod(ytdGoal, amountByPeriod);
+                        
+                        //Year to Date Actuals
+                        amountByPeriod = GetYTDActuals(actual);
+                        ytdActual = this.SumAmountByPeriod(ytdActual, amountByPeriod);
                     }
+
+                    
+
+                    //throw (new Exception($"" +
+                    //    $"results.Rows.Count = {results.Rows.Count}" +
+                    //    $"{SiteRef}" +
+                    //    $"fiscalYearEnding {fiscalYearEnding}   fiscalYearStarting {fiscalYearStarting}" +
+                    //    $"familyCodeEnding {familyCodeEnding}   familyCodeStarting {familyCodeStarting}" +
+                    //    $"salesPersonEnding {salesPersonEnding} salesPersonStarting {salesPersonStarting}" +
+                    //    $"FY count {fiscalYears.Count()} " +
+                    //    $"slFamCodeAlls {slFamCodeAlls.Count()}" +
+                    //    $"slSlsmanAlls {slSlsmanAlls.Count()}"
+                    //    ));
 
                     //Log a row for the sum totals by FC.
                     AddRowFC(results, SiteRef, fc.FamilyCode, fc.Description, fy.FiscalYear
-                            , actuals 
-                            , ytdGoals  
-                            , ytdActuals
+                            , actual 
+                            , ytdGoal  
+                            , ytdActual
                             , null
                             );
                 }
             }
+
+            //actuals = new AmountByPeriod();
+            //ytdGoals = new AmountByPeriod();
+            //ytdActuals = new AmountByPeriod();
+
+            //AddRowFC(results, SiteRef, "test", "test", 2024
+            //    , actuals
+            //    , ytdGoals
+            //    , ytdActuals
+            //    , "test"
+            //);
+
+            //throw (new Exception($"" +
+            //    $"results.Rows.Count = {results.Rows.Count}" +
+            //    $"{SiteRef}" +
+            //    $"fiscalYearEnding {fiscalYearEnding}   fiscalYearStarting {fiscalYearStarting}" +
+            //    $"familyCodeEnding {familyCodeEnding}   familyCodeStarting {familyCodeStarting}" +
+            //    $"salesPersonEnding {salesPersonEnding} salesPersonStarting {salesPersonStarting}" +
+            //    $"FY count {fiscalYears.Count()} " +
+            //    $"slFamCodeAlls {slFamCodeAlls.Count()}" +
+            //    $"slSlsmanAlls {slSlsmanAlls.Count()}"
+            //    ));
 
             return results;
         }
@@ -330,6 +393,7 @@ namespace PFI.Reporting.BL
                 results.Columns.Add(new DataColumn("CNH_YTDActual13", System.Type.GetType("System.Decimal")));
                 results.Columns.Add(new DataColumn("CLM_Notes", System.Type.GetType("System.String")));
                 results.Columns.Add(new DataColumn("RowPointer", System.Type.GetType("System.Guid")));
+                results.Columns.Add(new DataColumn("CLM_SiteRef", System.Type.GetType("System.String")));
             }
             else if (reportName.Equals("PFI_GetPCDetailReport"))
             {
@@ -377,6 +441,7 @@ namespace PFI.Reporting.BL
                 results.Columns.Add(new DataColumn("CNH_YTDActual13", System.Type.GetType("System.Decimal")));
                 results.Columns.Add(new DataColumn("CLM_Notes", System.Type.GetType("System.String")));
                 results.Columns.Add(new DataColumn("RowPointer", System.Type.GetType("System.Guid")));
+                results.Columns.Add(new DataColumn("CLM_SiteRef", System.Type.GetType("System.String")));
             }
             else if (reportName.Equals("PFI_GetItemDetailReport"))
             {
@@ -425,18 +490,20 @@ namespace PFI.Reporting.BL
                 results.Columns.Add(new DataColumn("CNH_YTDActual13", System.Type.GetType("System.Decimal")));
                 results.Columns.Add(new DataColumn("CLM_Notes", System.Type.GetType("System.String")));
                 results.Columns.Add(new DataColumn("RowPointer", System.Type.GetType("System.Guid")));
+                results.Columns.Add(new DataColumn("CLM_SiteRef", System.Type.GetType("System.String")));
             }
 
             return results;
         }
     
-        private AmountByPeriod GetYTDGoals(string siteRef, int fiscalYear, string familyCode, string salesPerson)
+        private AmountByPeriod GetYTDGoals(string siteRef, int fiscalYear, string familyCode, string salesPerson
+            , ue_PFI_SalespersonFCBudgetAll[] budgets)
         {
             AmountByPeriod result = null;
-            ue_PFI_SalespersonFCBudgetAll[] budgets;
+            //ue_PFI_SalespersonFCBudgetAll[] budgets;
             decimal twelfth;
 
-            budgets = DataAccess.ue_PFI_SalespersonFCBudgetAll(siteRef); //TODO - Pass in parameters so it gets results by fc and sp.
+            //budgets = DataAccess.ue_PFI_SalespersonFCBudgetAll(siteRef); //TODO - Pass in parameters so it gets results by fc and sp.
 
             foreach(var b in budgets
                     .Where(w => w.FiscalYear == fiscalYear)
@@ -485,11 +552,11 @@ namespace PFI.Reporting.BL
             return result;
         }
 
-        private AmountByPeriod GetYTDActuals(string siteRef, int fiscalYear, string familyCode, string salesPerson)
+        private AmountByPeriod GetYTDActuals(AmountByPeriod actuals)
         {
             AmountByPeriod result = new AmountByPeriod();
- 
-            result = this.GetActuals(siteRef, fiscalYear, familyCode, salesPerson);
+
+            result = actuals;
 
             //Our goal with YTD is to sum up the prior periods.
             //So by getting the normal actuals not YTD the months
@@ -529,20 +596,20 @@ namespace PFI.Reporting.BL
             result.P12 = a1.P12 + a2.P12;
             result.P13 = a1.P13 + a2.P13;
 
-            return a1;
+            return result;
         }
 
-        private AmountByPeriod GetActuals(string siteRef, int fiscalYear, string familyCode, string salesPerson)
+        private AmountByPeriod GetActuals(string siteRef, int fiscalYear, string familyCode, string salesPerson,
+            ue_PFI_GrossProfitReportSale[] actuals,
+            ue_PFI_SPFCActOverrideAll[] actualOverrides,
+            FiscalYearPeriods[] fiscalYearPeriods
+            )
         {
             AmountByPeriod result;
-            ue_PFI_GrossProfitReportSale[] actuals;
-            ue_PFI_SPFCActOverrideAll[] actualOverrides;
-            FiscalYearPeriods[] fiscalYearPeriods;
+            FiscalYearPeriods[] currentFiscalYearPeriods;
             int period;
 
-            fiscalYearPeriods = DataAccess.FiscalYearPeriods().Where(w=>w.FiscalYear == fiscalYear).ToArray(); //TODO - Pass in parameters so it gets results by fy
-            actuals = DataAccess.ue_PFI_GrossProfitReportSale(siteRef);     //TODO - Pass in parameters so it gets results by fc and sp.
-            actualOverrides = DataAccess.ue_PFI_SPFCActOverrideAll(siteRef);//TODO - Pass in parameters so it gets results by fc and sp.
+            currentFiscalYearPeriods = fiscalYearPeriods.Where(w=>w.FiscalYear == fiscalYear).ToArray();
 
             //Initialize the data.
             result = new AmountByPeriod();
@@ -560,6 +627,11 @@ namespace PFI.Reporting.BL
             result.P12 = 0;
             result.P13 = 0;
 
+
+            //throw (new Exception($"" +
+            //    $"actual = {JsonConvert.SerializeObject(actuals.Where(w => w.DerFiscalYear == fiscalYear).Where(w => w.DerFamilyCode.Trim().ToLower().Equals(familyCode.Trim().ToLower())).Where(w => w.DerSalesPerson.Trim().ToLower().Equals(salesPerson.Trim().ToLower())).ToArray())}"
+            //    ));
+
             //Loop through the actuals and sum up actuals based on what period the date lands.
             foreach (var a in actuals
                 .Where(w => w.DerFiscalYear == fiscalYear)
@@ -568,54 +640,54 @@ namespace PFI.Reporting.BL
             {
                 //Figure out what period that date falls into.
                 period = -1; //Impossible state
-                if(fiscalYearPeriods.Where(w => w.EndPeriod1 >= a.InvoiceDate).Count() > 0)
+                if(currentFiscalYearPeriods.Where(w => w.EndPeriod1 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 1;
-                }else if (fiscalYearPeriods.Where(w => w.EndPeriod2 >= a.InvoiceDate).Count() > 0)
+                }else if (currentFiscalYearPeriods.Where(w => w.EndPeriod2 >= a.InvoiceDate).Count() > 0)
                 {  
                     period = 2; 
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod3 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod3 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 3;
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod4 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod4 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 4;
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod5 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod5 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 5;
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod6 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod6 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 6;
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod7 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod7 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 7;
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod8 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod8 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 8;
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod9 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod9 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 9;
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod10 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod10 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 10;
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod11 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod11 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 11;
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod12 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod12 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 12;
                 }
-                else if (fiscalYearPeriods.Where(w => w.EndPeriod13 >= a.InvoiceDate).Count() > 0)
+                else if (currentFiscalYearPeriods.Where(w => w.EndPeriod13 >= a.InvoiceDate).Count() > 0)
                 {
                     period = 13;
                 }
@@ -666,56 +738,57 @@ namespace PFI.Reporting.BL
                 
             }
 
-            //Load overrides into the periods
-            //This will replace anything found in actuals for that period.
-            foreach (var a in actualOverrides
-                .Where(w => w.FiscalYear == fiscalYear)
-                .Where(w => w.FamilyCode.Trim().ToLower().Equals(familyCode.Trim().ToLower()))
-                .Where(w => w.SalesPerson.Trim().ToLower().Equals(salesPerson.Trim().ToLower())))
-            {
-                switch(a.FiscalPeriod)
-                {
-                    case 1:
-                        result.P01 = a.ActualOverride; 
-                        break;
-                    case 2:
-                        result.P02 = a.ActualOverride;
-                        break;
-                    case 3:
-                        result.P03 = a.ActualOverride;
-                        break;
-                    case 4:
-                        result.P04 = a.ActualOverride;
-                        break;
-                    case 5:
-                        result.P05 = a.ActualOverride;
-                        break;
-                    case 6:
-                        result.P06 = a.ActualOverride;
-                        break;
-                    case 7:
-                        result.P07 = a.ActualOverride;
-                        break;
-                    case 8:
-                        result.P08 = a.ActualOverride;
-                        break;
-                    case 9:
-                        result.P09 = a.ActualOverride;
-                        break;
-                    case 10:
-                        result.P10 = a.ActualOverride;
-                        break;
-                    case 11:
-                        result.P11 = a.ActualOverride;
-                        break;
-                    case 12:
-                        result.P12 = a.ActualOverride;
-                        break;
-                    case 13:
-                        result.P13 = a.ActualOverride;
-                        break;
-                }
-            }
+            ////Load overrides into the periods
+            ////This will replace anything found in actuals for that period.
+            //foreach (var a in actualOverrides
+            //    .Where(w => w.FiscalYear == fiscalYear)
+            //    .Where(w => w.FamilyCode.Trim().ToLower().Equals(familyCode.Trim().ToLower()))
+            //    .Where(w => w.SalesPerson.Trim().ToLower().Equals(salesPerson.Trim().ToLower()))
+            //    .Where(w => w.ActualOverride > 0))
+            //{
+            //    switch (a.FiscalPeriod)
+            //    {
+            //        case 1:
+            //            result.P01 = a.ActualOverride;
+            //            break;
+            //        case 2:
+            //            result.P02 = a.ActualOverride;
+            //            break;
+            //        case 3:
+            //            result.P03 = a.ActualOverride;
+            //            break;
+            //        case 4:
+            //            result.P04 = a.ActualOverride;
+            //            break;
+            //        case 5:
+            //            result.P05 = a.ActualOverride;
+            //            break;
+            //        case 6:
+            //            result.P06 = a.ActualOverride;
+            //            break;
+            //        case 7:
+            //            result.P07 = a.ActualOverride;
+            //            break;
+            //        case 8:
+            //            result.P08 = a.ActualOverride;
+            //            break;
+            //        case 9:
+            //            result.P09 = a.ActualOverride;
+            //            break;
+            //        case 10:
+            //            result.P10 = a.ActualOverride;
+            //            break;
+            //        case 11:
+            //            result.P11 = a.ActualOverride;
+            //            break;
+            //        case 12:
+            //            result.P12 = a.ActualOverride;
+            //            break;
+            //        case 13:
+            //            result.P13 = a.ActualOverride;
+            //            break;
+            //    }
+            //}
 
             return result;
         }
@@ -734,10 +807,11 @@ namespace PFI.Reporting.BL
             DataRow row;
 
             row = dt.NewRow();
-            row["CLM_SiteRef"] = CLM_SiteRef;
+            
             row["CLM_FamilyCode"] = CLM_FamilyCode;
             row["CLM_FamilyCodeDesc"] = CLM_FamilyCodeDesc;
             row["CLM_FiscalYear"] = CLM_FiscalYear;
+            
             row["CLM_PeriodActual01"] = PeriodActual.P01;
             row["CLM_PeriodActual02"] = PeriodActual.P02;
             row["CLM_PeriodActual03"] = PeriodActual.P03;
@@ -751,6 +825,7 @@ namespace PFI.Reporting.BL
             row["CLM_PeriodActual11"] = PeriodActual.P11;
             row["CLM_PeriodActual12"] = PeriodActual.P12;
             row["CLM_PeriodActual13"] = PeriodActual.P13;
+            
             row["CLM_YTDGoal01"] = PeriodYTDGoal.P01;
             row["CLM_YTDGoal02"] = PeriodYTDGoal.P02;
             row["CLM_YTDGoal03"] = PeriodYTDGoal.P03;
@@ -764,6 +839,7 @@ namespace PFI.Reporting.BL
             row["CLM_YTDGoal11"] = PeriodYTDGoal.P11;
             row["CLM_YTDGoal12"] = PeriodYTDGoal.P12;
             row["CLM_YTDGoal13"] = PeriodYTDGoal.P13;
+           
             row["CNH_YTDActual01"] = PeriodYTDActual.P01;
             row["CNH_YTDActual02"] = PeriodYTDActual.P02;
             row["CNH_YTDActual03"] = PeriodYTDActual.P03;
@@ -778,8 +854,11 @@ namespace PFI.Reporting.BL
             row["CNH_YTDActual12"] = PeriodYTDActual.P12;
             row["CNH_YTDActual13"] = PeriodYTDActual.P13;
 
+            row["CLM_Notes"] = CLM_Notes;
             row["RowPointer"] = rowPointer;
+            row["CLM_SiteRef"] = CLM_SiteRef;
 
+            dt.Rows.Add(row);
         }
 
     }

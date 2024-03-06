@@ -27,5 +27,6 @@ namespace PFI.Reporting.Models
         public string RowPointer { get; set; }
         public string ue_ItemAllFamilyCode { get; set; }
         public string ue_PFI_FamilyCodeCategory { get; set; }
+        public string CoSlsman { get; set; }
     }
 }

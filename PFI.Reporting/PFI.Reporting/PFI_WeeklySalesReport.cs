@@ -60,7 +60,7 @@ namespace PFI.Reporting
 
 
         [IDOMethod(MethodFlags.CustomLoad)]
-        public DataTable PFI_GetReport(DateTime startingWeek, DateTime endingWeek)
+        public DataTable PFI_GetReport(DateTime startingWeek, DateTime endingWeek, string startingSalesPerson, string endingSalesPerson)
         {
             WeeklySalesReportBL bl;
             DataTable results = null;
@@ -70,6 +70,8 @@ namespace PFI.Reporting
             DateTime currWeek;
             
             bl = new WeeklySalesReportBL(base.Context);
+
+            bl.SetSalesPersonRange(startingSalesPerson, endingSalesPerson);
 
             results = bl.SetupDataTable(); //Encapsulated the DT setup for readability.
 
