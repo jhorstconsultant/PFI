@@ -64,9 +64,6 @@ namespace PFI.Reporting
         {
             WeeklySalesReportBL bl;
             DataTable results = null;
-            
-            //startingWeek = new DateTime(2023, 3, 21);
-            //endingWeek = DateTime.Now;
             DateTime currWeek;
             
             bl = new WeeklySalesReportBL(base.Context);
@@ -89,5 +86,56 @@ namespace PFI.Reporting
 
             return results;
         }
+
+        [IDOMethod(MethodFlags.None, "Infobar")]
+        public int PFI_SalespersonEmail(string salesPerson, out string html, out string Infobar)
+        {
+            int result = 0;
+            Infobar = String.Empty;
+            html = String.Empty;
+            WeeklySalesReportBL bl;
+            DateTime lastWeek;
+
+            try
+            {
+                lastWeek = DateTime.Now.AddDays(-7);
+                bl = new WeeklySalesReportBL(base.Context);
+
+                html = bl.GetSalespersonEmailBody(lastWeek, salesPerson);
+            }
+            catch (Exception ex)
+            {
+                Infobar = ex.Message;
+                result = 16;
+            }
+
+            return result;
+        }
+
+        [IDOMethod(MethodFlags.None, "Infobar")]
+        public int PFI_SalespersonAllEmail(out string html, out string Infobar)
+        {
+            int result = 0;
+            Infobar = String.Empty;
+            html = String.Empty;
+            WeeklySalesReportBL bl;
+            DateTime lastWeek;
+
+            try
+            {
+                lastWeek = DateTime.Now.AddDays(-7);
+                bl = new WeeklySalesReportBL(base.Context);
+
+                html = bl.GetSalespersonEmailBody(lastWeek);
+            }
+            catch (Exception ex)
+            {
+                Infobar = ex.Message;
+                result = 16;
+            }
+
+            return result;
+        }
+
     }
 }

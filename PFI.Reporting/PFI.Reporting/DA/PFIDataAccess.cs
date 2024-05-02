@@ -2,6 +2,7 @@
 using Mongoose.Core.Extensions;
 using Mongoose.IDO;
 using Mongoose.IDO.Protocol;
+using Newtonsoft.Json;
 using PFI.Reporting.Models;
 using System;
 using System.Collections.Generic;
@@ -482,7 +483,7 @@ namespace PFI.Reporting.DA
                         slCoItem.RowPointer = response[i, "RowPointer"].Value;
                         slCoItem.ue_ItemAllFamilyCode = response[i, "ue_ItemAllFamilyCode"].Value;
                         slCoItem.ue_PFI_FamilyCodeCategory = response[i, "ue_PFI_FamilyCodeCategory"].Value;
-                        slCoItem.CoSlsman = response[i, "CoSlsman"].Value;
+                        slCoItem.CoSlsman = LowerTrim(response[i, "CoSlsman"].Value);
 
                         lastRowPointer = slCoItem.RowPointer;
                         slCoItems.Add(slCoItem);

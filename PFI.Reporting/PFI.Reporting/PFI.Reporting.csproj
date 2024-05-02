@@ -97,6 +97,7 @@
     <Compile Include="DA\PFIDataAccess.cs" />
     <Compile Include="Models\AmountByPeriod.cs" />
     <Compile Include="Models\FiscalYearPeriods.cs" />
+    <Compile Include="Models\SalespersonEmailWeek.cs" />
     <Compile Include="Models\SLCoItems.cs" />
     <Compile Include="Models\SLFamCodeAll.cs" />
     <Compile Include="Models\PFI_FiscalYear.cs" />
