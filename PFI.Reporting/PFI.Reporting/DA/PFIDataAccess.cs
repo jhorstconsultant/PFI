@@ -15,8 +15,8 @@ namespace PFI.Reporting.DA
 {
     public class PFIDataAccess
     {
-        private IIDOExtensionClassContext Context { get; set; }
-        public PFIDataAccess(IIDOExtensionClassContext context)
+        private IIDOCommands Context { get; set; }
+        public PFIDataAccess(IIDOCommands context)
         {
             this.Context = context;
         }
@@ -38,7 +38,7 @@ namespace PFI.Reporting.DA
                     RecordCap = 0
                 };
 
-                response = Context.Commands.LoadCollection(request);
+                response = Context.LoadCollection(request);
 
                 for (int i = 0; i < response.Items.Count; i++)
                 {
@@ -75,7 +75,7 @@ namespace PFI.Reporting.DA
                     RecordCap = 0
                 };
 
-                response = Context.Commands.LoadCollection(request);
+                response = Context.LoadCollection(request);
 
                 for (int i = 0; i < response.Items.Count; i++)
                 {
@@ -113,7 +113,7 @@ namespace PFI.Reporting.DA
                     RecordCap = 0
                 };
 
-                response = Context.Commands.LoadCollection(request);
+                response = Context.LoadCollection(request);
 
                 for (int i = 0; i < response.Items.Count; i++)
                 {
@@ -130,6 +130,75 @@ namespace PFI.Reporting.DA
             }
 
             return ue_PFI_PeriodsAlls.ToArray();
+        }
+        public ue_PFI_FCToFCCategoryMaps[] ue_PFI_FCToFCCategoryMaps()
+        {
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            ue_PFI_FCToFCCategoryMaps ue_PFI_FCToFCCategoryMap;
+            string filter;
+            string lastRowPointer = null;
+            int batchSize;
+            DataTable responseDT;
+            string json;
+            List<ue_PFI_FCToFCCategoryMaps> temp;
+            List<ue_PFI_FCToFCCategoryMaps> ue_PFI_FCToFCCategoryMaps;
+
+            ue_PFI_FCToFCCategoryMaps = new List<ue_PFI_FCToFCCategoryMaps>();
+
+            try
+            {
+                batchSize = 0;
+                do
+                {
+                    if (string.IsNullOrWhiteSpace(lastRowPointer))
+                    {
+                        filter = $" 1 = 1 "; //SyteLine's IDO needs a valid filter or it will cause order by errors.
+                    }
+                    else
+                    {
+                        //If it isn't the first loop I want to grab the next batch by looking for RP greater than the last RP found.
+                        filter = $" RowPointer > '{lastRowPointer}' ";
+                    }
+
+                    request = new LoadCollectionRequestData
+                    {
+                        IDOName = "ue_PFI_FCToFCCategoryMaps",
+                        PropertyList = new PropertyList("FamilyCode, FamilyCodeCategory, RowPointer"),
+                        Filter = filter,
+                        OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
+                        RecordCap = 0 //It means pull back as many records as possible.
+                    };
+
+                    response = Context.LoadCollection(request);
+
+                    batchSize = response.Items.Count;
+
+                    //Didn't want to cast to DT then do JSON Serial/Deserial on an empty collection.
+                    if (batchSize > 0)
+                    {
+                        //Brian Antos Method
+                        //He turns the result to a DataTable then into Json then deserializes into a List object
+                        responseDT = new IDODataSet(response).ToDataTable();
+                        json = Newtonsoft.Json.JsonConvert.SerializeObject(responseDT);
+                        temp = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ue_PFI_FCToFCCategoryMaps>>(json);
+
+                        //Want the last rowpointer found in the response so I can get the next batch.
+                        ue_PFI_FCToFCCategoryMap = temp.LastOrDefault();
+
+                        if (ue_PFI_FCToFCCategoryMap != null)
+                            lastRowPointer = ue_PFI_FCToFCCategoryMap.RowPointer;
+
+                        ue_PFI_FCToFCCategoryMaps.AddRange(temp);
+                    }
+                } while (batchSize > 0);
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("Method:'{0}' {1} Exception:'{2}'", "ue_PFI_FCToFCCategoryMaps", Environment.NewLine, ex.Message)));
+            }
+
+            return ue_PFI_FCToFCCategoryMaps.ToArray();
         }
         public ue_PFI_SalespersonFCBudgetAll[] ue_PFI_SalespersonFCBudgetAll(string SiteRef)
         {
@@ -169,7 +238,7 @@ namespace PFI.Reporting.DA
                         RecordCap = 0 //It means pull back as many records as possible.
                     };
 
-                    response = Context.Commands.LoadCollection(request);
+                    response = Context.LoadCollection(request);
 
                     batchSize = response.Items.Count;
 
@@ -235,7 +304,7 @@ namespace PFI.Reporting.DA
                         RecordCap = 0 //It means pull back as many records as possible.
                     };
 
-                    response = Context.Commands.LoadCollection(request);
+                    response = Context.LoadCollection(request);
 
                     batchSize = response.Items.Count;
 
@@ -307,7 +376,7 @@ namespace PFI.Reporting.DA
                         RecordCap = 0 //It means pull back as many records as possible.
                     };
 
-                    response = Context.Commands.LoadCollection(request);
+                    response = Context.LoadCollection(request);
 
                     batchSize = response.Items.Count;
 
@@ -388,7 +457,7 @@ namespace PFI.Reporting.DA
                         RecordCap = 0 //It means pull back as many records as possible.
                     };
 
-                    response = Context.Commands.LoadCollection(request);
+                    response = Context.LoadCollection(request);
 
                     batchSize = response.Items.Count;
 
@@ -457,7 +526,7 @@ namespace PFI.Reporting.DA
                         RecordCap = 0 //It means pull back as many records as possible.
                     };
 
-                    response = Context.Commands.LoadCollection(request);
+                    response = Context.LoadCollection(request);
 
                     batchSize = response.Items.Count;
 
@@ -536,7 +605,7 @@ namespace PFI.Reporting.DA
                         RecordCap = 0 //It means pull back as many records as possible.
                     };
 
-                    response = Context.Commands.LoadCollection(request);
+                    response = Context.LoadCollection(request);
 
                     batchSize = response.Items.Count;
 
@@ -601,7 +670,7 @@ namespace PFI.Reporting.DA
                     RecordCap = 1 
                 };
 
-                response = Context.Commands.LoadCollection(request);
+                response = Context.LoadCollection(request);
 
                 batchSize = response.Items.Count;
 

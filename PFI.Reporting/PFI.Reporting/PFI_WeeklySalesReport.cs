@@ -17,17 +17,41 @@ using PFI.Reporting.BL;
 using PFI.Reporting.DA;
 using PFI.Reporting.Models;
 using static Mongoose.Core.Common.QuickKeywordParser;
-using static Mongoose.Forms.ExportSettings;
+//using static Mongoose.Forms.ExportSettings;
 
 namespace PFI.Reporting
 {
-    
-    
+
+
     [IDOExtensionClass("PFI_WeeklySalesReport")]
     public class PFI_WeeklySalesReport : IDOExtensionClass
     {
         [IDOMethod(MethodFlags.CustomLoad)]
         public DataTable PFI_GetWeekendings()
+        {
+            return Process_PFI_GetWeekendings(base.Context.Commands);
+        }
+
+        [IDOMethod(MethodFlags.CustomLoad)]
+        public DataTable PFI_GetReport(DateTime startingWeek, DateTime endingWeek, string startingSalesPerson, string endingSalesPerson)
+        {
+            return Process_PFI_GetReport(base.Context.Commands, startingWeek, endingWeek, startingSalesPerson, endingSalesPerson);
+        }
+
+        [IDOMethod(MethodFlags.None, "Infobar")]
+        public int PFI_SalespersonEmail(string salesPerson, out string html, out string Infobar)
+        {
+            return Process_PFI_SalespersonEmail(base.Context.Commands, salesPerson, out html, out Infobar);
+        }
+
+        [IDOMethod(MethodFlags.None, "Infobar")]
+        public int PFI_SalespersonAllEmail(out string html, out string Infobar)
+        {
+            return Process_PFI_SalespersonAllEmail(base.Context.Commands, out html, out Infobar);
+        }
+
+        #region "Process"
+        public static DataTable Process_PFI_GetWeekendings(IIDOCommands context)
         {
             WeeklySalesReportBL bl;
             DataTable results = null;
@@ -36,7 +60,7 @@ namespace PFI.Reporting
             DateTime endingWeek = DateTime.Now;
             DateTime currWeek;
 
-            bl = new WeeklySalesReportBL(base.Context);
+            bl = new WeeklySalesReportBL(context);
 
             results = new DataTable("Results");
             results.Columns.Add(new DataColumn("ue_CLM_Weekending", System.Type.GetType("System.DateTime")));
@@ -46,7 +70,7 @@ namespace PFI.Reporting
             startingWeek = bl.GetLastDayOfWeek(startingWeek);
             endingWeek = bl.GetLastDayOfWeek(endingWeek);
             currWeek = endingWeek;
-            while (currWeek >= startingWeek) 
+            while (currWeek >= startingWeek)
             {
                 row = results.NewRow();
                 row["ue_CLM_Weekending"] = currWeek.Date;
@@ -56,17 +80,16 @@ namespace PFI.Reporting
             }
 
             return results;
+            
         }
 
-
-        [IDOMethod(MethodFlags.CustomLoad)]
-        public DataTable PFI_GetReport(DateTime startingWeek, DateTime endingWeek, string startingSalesPerson, string endingSalesPerson)
+        public static DataTable Process_PFI_GetReport(IIDOCommands context, DateTime startingWeek, DateTime endingWeek, string startingSalesPerson, string endingSalesPerson)
         {
             WeeklySalesReportBL bl;
             DataTable results = null;
             DateTime currWeek;
-            
-            bl = new WeeklySalesReportBL(base.Context);
+
+            bl = new WeeklySalesReportBL(context);
 
             bl.SetSalesPersonRange(startingSalesPerson, endingSalesPerson);
 
@@ -87,8 +110,7 @@ namespace PFI.Reporting
             return results;
         }
 
-        [IDOMethod(MethodFlags.None, "Infobar")]
-        public int PFI_SalespersonEmail(string salesPerson, out string html, out string Infobar)
+        public static int Process_PFI_SalespersonAllEmail(IIDOCommands context, out string html, out string Infobar)
         {
             int result = 0;
             Infobar = String.Empty;
@@ -99,7 +121,31 @@ namespace PFI.Reporting
             try
             {
                 lastWeek = DateTime.Now.AddDays(-7);
-                bl = new WeeklySalesReportBL(base.Context);
+                bl = new WeeklySalesReportBL(context);
+
+                html = bl.GetSalespersonEmailBody(lastWeek);
+            }
+            catch (Exception ex)
+            {
+                Infobar = ex.Message;
+                result = 16;
+            }
+
+            return result;
+        }
+
+        public static int Process_PFI_SalespersonEmail(IIDOCommands context, string salesPerson, out string html, out string Infobar)
+        {
+            int result = 0;
+            Infobar = String.Empty;
+            html = String.Empty;
+            WeeklySalesReportBL bl;
+            DateTime lastWeek;
+
+            try
+            {
+                lastWeek = DateTime.Now.AddDays(-7);
+                bl = new WeeklySalesReportBL(context);
 
                 html = bl.GetSalespersonEmailBody(lastWeek, salesPerson);
             }
@@ -112,30 +158,7 @@ namespace PFI.Reporting
             return result;
         }
 
-        [IDOMethod(MethodFlags.None, "Infobar")]
-        public int PFI_SalespersonAllEmail(out string html, out string Infobar)
-        {
-            int result = 0;
-            Infobar = String.Empty;
-            html = String.Empty;
-            WeeklySalesReportBL bl;
-            DateTime lastWeek;
-
-            try
-            {
-                lastWeek = DateTime.Now.AddDays(-7);
-                bl = new WeeklySalesReportBL(base.Context);
-
-                html = bl.GetSalespersonEmailBody(lastWeek);
-            }
-            catch (Exception ex)
-            {
-                Infobar = ex.Message;
-                result = 16;
-            }
-
-            return result;
-        }
+        #endregion
 
     }
 }

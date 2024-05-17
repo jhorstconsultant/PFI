@@ -1,7 +1,8 @@
 ﻿using Infor.DocumentManagement.ICP;
-using Mongoose.Forms;
+//using Mongoose.Forms;
 using Mongoose.IDO;
 using Mongoose.IDO.Metadata;
+using Mongoose.IDO.Protocol;
 using Newtonsoft.Json;
 using PFI.Reporting.DA;
 using PFI.Reporting.Models;
@@ -13,19 +14,19 @@ using System.Text;
 using System.Threading.Tasks;
 using static ICP.Standard.Signature.V1.UserFilterResponse;
 using static Mongoose.Core.Common.QuickKeywordParser;
-using static Mongoose.Forms.ExportSettings;
+//using static Mongoose.Forms.ExportSettings;
 
 namespace PFI.Reporting.BL
 {
     public class SalesGoalsByProductsBySalesmanReportBL
     {
-        public SalesGoalsByProductsBySalesmanReportBL(IIDOExtensionClassContext context)
+        public SalesGoalsByProductsBySalesmanReportBL(IIDOCommands context)
         {
             this.Context = context;
-            this.DataAccess = new PFIDataAccess(this.Context); 
+            this.DataAccess = new PFIDataAccess(context); 
         }
 
-        private IIDOExtensionClassContext Context { get; set; }
+        private IIDOCommands Context { get; set; }
         private PFIDataAccess DataAccess { get; set; }
 
         public DataTable PFI_GetReport(string SiteRef, int? fiscalYearStarting, int? fiscalYearEnding, string familyCodeStarting, string familyCodeEnding, string salesPersonStarting, string salesPersonEnding)

@@ -26,7 +26,7 @@ namespace PFI.Reporting
         public DataTable PFI_GetReport(string SiteRef, int? fiscalYearStarting, int? fiscalYearEnding, string familyCodeStarting, string familyCodeEnding, string salesPersonStarting, string salesPersonEnding)
         {
             DataTable results = null;
-            SalesGoalsByProductsBySalesmanReportBL bl = new SalesGoalsByProductsBySalesmanReportBL(base.Context);
+            SalesGoalsByProductsBySalesmanReportBL bl = new SalesGoalsByProductsBySalesmanReportBL(base.Context.Commands);
 
             results = bl.PFI_GetReport(SiteRef, fiscalYearStarting, fiscalYearEnding, familyCodeStarting, familyCodeEnding, salesPersonStarting, salesPersonEnding);
 
@@ -37,7 +37,7 @@ namespace PFI.Reporting
         public DataTable PFI_GetFCDetailReport(string SiteRef, int? fiscalYearStarting, int? fiscalYearEnding, string familyCodeStarting, string familyCodeEnding, string salesPersonStarting, string salesPersonEnding)
         {
             DataTable results = null;
-            SalesGoalsByProductsBySalesmanReportBL bl = new SalesGoalsByProductsBySalesmanReportBL(base.Context);
+            SalesGoalsByProductsBySalesmanReportBL bl = new SalesGoalsByProductsBySalesmanReportBL(base.Context.Commands);
 
             results = bl.PFI_GetFCDetailReport(SiteRef, fiscalYearStarting, fiscalYearEnding, familyCodeStarting, familyCodeEnding, salesPersonStarting, salesPersonEnding);
 
@@ -48,7 +48,7 @@ namespace PFI.Reporting
         public DataTable PFI_GetPCDetailReport(string SiteRef, int? fiscalYearStarting, int? fiscalYearEnding, string familyCodeStarting, string familyCodeEnding, string salesPersonStarting, string salesPersonEnding, string productCodeStarting, string productCodeEnding)
         {
             DataTable results = null;
-            SalesGoalsByProductsBySalesmanReportBL bl = new SalesGoalsByProductsBySalesmanReportBL(base.Context);
+            SalesGoalsByProductsBySalesmanReportBL bl = new SalesGoalsByProductsBySalesmanReportBL(base.Context.Commands);
 
             results = bl.PFI_GetPCDetailReport(SiteRef, fiscalYearStarting, fiscalYearEnding, familyCodeStarting, familyCodeEnding, salesPersonStarting, salesPersonEnding, productCodeStarting, productCodeEnding);
 
@@ -59,7 +59,7 @@ namespace PFI.Reporting
         public DataTable PFI_GetItemDetailReport(string SiteRef, int? fiscalYearStarting, int? fiscalYearEnding, string familyCodeStarting, string familyCodeEnding, string salesPersonStarting, string salesPersonEnding, string productCodeStarting, string productCodeEnding, string itemStarting, string itemEnding)
         {
             DataTable results = null;
-            SalesGoalsByProductsBySalesmanReportBL bl = new SalesGoalsByProductsBySalesmanReportBL(base.Context);
+            SalesGoalsByProductsBySalesmanReportBL bl = new SalesGoalsByProductsBySalesmanReportBL(base.Context.Commands);
 
             results = bl.PFI_GetItemDetailReport(SiteRef, fiscalYearStarting, fiscalYearEnding, familyCodeStarting, familyCodeEnding, salesPersonStarting, salesPersonEnding, productCodeStarting, productCodeEnding, itemStarting, itemEnding);
 

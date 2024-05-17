@@ -1,5 +1,6 @@
-﻿using Mongoose.Forms;
+﻿//using Mongoose.Forms;
 using Mongoose.IDO;
+using Mongoose.IDO.Protocol;
 using Newtonsoft.Json;
 using PFI.Reporting.DA;
 using PFI.Reporting.Models;
@@ -9,13 +10,13 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Mongoose.Forms.ExportSettings;
+//using static Mongoose.Forms.ExportSettings;
 
 namespace PFI.Reporting.BL
 {
     public class WeeklySalesReportBL
     {
-        public WeeklySalesReportBL(IIDOExtensionClassContext context) 
+        public WeeklySalesReportBL(IIDOCommands context) 
         {
             DataAccess = new PFIDataAccess(context); //Context is inherited
             SiteRef = DataAccess.GetCurrentSite();
@@ -37,6 +38,9 @@ namespace PFI.Reporting.BL
 
             if (string.IsNullOrWhiteSpace(EndingSalesPerson))
                 EndingSalesPerson = SalesPersons.Select(s => s.Slsman).Max();
+
+            StartingSalesPerson = StartingSalesPerson.ToLower();
+            EndingSalesPerson = EndingSalesPerson.ToLower();
         }
 
         public void SetSalesPersonRange()
@@ -94,11 +98,11 @@ namespace PFI.Reporting.BL
         }
         public Tuple<string, string>[] GetFamilyCodeCategories()
         {
-            ue_PFI_SalespersonFCBudgetAll[] budgets;
+            ue_PFI_FCToFCCategoryMaps[] maps;
 
-            budgets = DataAccess.ue_PFI_SalespersonFCBudgetAll(SiteRef);
+            maps = DataAccess.ue_PFI_FCToFCCategoryMaps();
 
-            return budgets.Select(s=>new Tuple<string,string>(s.FamilyCode,s.FamilyCodeCategory)).Distinct().ToArray();
+            return maps.Select(s=>new Tuple<string,string>(s.FamilyCode,s.FamilyCodeCategory)).Distinct().ToArray();
         }
         public DataTable SetupDataTable()
         {
@@ -125,27 +129,21 @@ namespace PFI.Reporting.BL
             DataRow row;
             ue_PFI_FamilyCodeCategories[] fcc = null;
 
-            try
-            {
-                fcc = DataAccess.ue_PFI_FamilyCodeCategories();
+            fcc = DataAccess.ue_PFI_FamilyCodeCategories();
 
-                row = dataTable.NewRow();
-                row["ue_CLM_Weekending"] = week.Date;
+            row = dataTable.NewRow();
+            row["ue_CLM_Weekending"] = week.Date;
 
-                row["ue_CLM_Tumbling"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("TUMBLING")).FirstOrDefault(), week);
-                row["ue_CLM_Blasting"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("BLASTING")).FirstOrDefault(), week);
-                row["ue_CLM_Chemtrol"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("CHEMTROL")).FirstOrDefault(), week);
-                row["ue_CLM_VibratoryMedia"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("VIBRATORY MEDIA")).FirstOrDefault(), week);
-                row["ue_CLM_BlastMedia"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("BLAST MEDIA")).FirstOrDefault(), week);
-                row["ue_CLM_SpareParts"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("SPARE PARTS")).FirstOrDefault(), week);
-                row["ue_CLM_SupplierCompounds"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("SUPPLIER COMPOUNDS")).FirstOrDefault(), week);
-                row["ue_CLM_VibratoryEquipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("VIBRATORY EQUIPMENT")).FirstOrDefault(), week);
-                row["ue_CLM_BlastEquipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("BLAST EQUIPMENT")).FirstOrDefault(), week);
-                row["ue_CLM_Equipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("EQUIPMENT")).FirstOrDefault(), week);
-            }catch(Exception ex) 
-            {
-                throw new Exception("Error in CreateNewRow");
-            }
+            row["ue_CLM_Tumbling"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("TUMBLING")).FirstOrDefault(), week);
+            row["ue_CLM_Blasting"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("BLASTING")).FirstOrDefault(), week);
+            row["ue_CLM_Chemtrol"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("CHEMTROL")).FirstOrDefault(), week);
+            row["ue_CLM_VibratoryMedia"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("VIBRATORY MEDIA")).FirstOrDefault(), week);
+            row["ue_CLM_BlastMedia"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("BLAST MEDIA")).FirstOrDefault(), week);
+            row["ue_CLM_SpareParts"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("SPARE PARTS")).FirstOrDefault(), week);
+            row["ue_CLM_SupplierCompounds"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("SUPPLIER COMPOUNDS")).FirstOrDefault(), week);
+            row["ue_CLM_VibratoryEquipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("VIBRATORY EQUIPMENT")).FirstOrDefault(), week);
+            row["ue_CLM_BlastEquipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("BLAST EQUIPMENT")).FirstOrDefault(), week);
+            row["ue_CLM_Equipment"] = GetCategoryTotal(fcc.Where(w => w.FamilyCodeCategory.Equals("EQUIPMENT")).FirstOrDefault(), week);
 
             return row;
         }

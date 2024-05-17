@@ -4,16 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A033B3FD-DF17-42E8-A8C8-44BC61550D83}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PFI.Reporting</RootNamespace>
-    <AssemblyName>PFI.Reporting</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <ProjectGuid>{B9DD5C0E-A37C-4C78-8233-E283885E34E4}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>PFI.Reporting.ConsoleApp</RootNamespace>
+    <AssemblyName>PFI.Reporting.ConsoleApp</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -31,8 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICP.Standard">
-      <HintPath>..\..\..\Users\jhorst\Downloads\2023.10.00.6_SL10SolutionSDK\Mongoose.submod\Setup\WinStudio\ICP.Standard.dll</HintPath>
+    <Reference Include="ICERPLayer">
+      <HintPath>..\..\..\..\repo\CNHReman.SyteLine\Site\DLLs\ICERPLayer.dll</HintPath>
     </Reference>
     <Reference Include="IDOBase, Version=7.1.0.0, Culture=neutral, PublicKeyToken=87d3698afe01ef37, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -50,15 +52,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\repo\SyteLine V10 DLL\IDORequestClient.dll</HintPath>
     </Reference>
-    <Reference Include="IDORequestProcessor">
+    <Reference Include="IDORequestProcessor, Version=7.1.0.0, Culture=neutral, PublicKeyToken=87d3698afe01ef37, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\repo\SyteLine V10 DLL\IDORequestProcessor.dll</HintPath>
     </Reference>
     <Reference Include="MGShared, Version=7.1.0.0, Culture=neutral, PublicKeyToken=87d3698afe01ef37, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\repo\SyteLine V10 DLL\MGShared.dll</HintPath>
     </Reference>
-    <Reference Include="MGSharedResources, Version=7.1.0.0, Culture=neutral, PublicKeyToken=87d3698afe01ef37, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MGSharedResources">
       <HintPath>..\..\..\..\repo\SyteLine V10 DLL\MGSharedResources.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -81,31 +83,23 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\repo\SyteLine V10 DLL\WSFormServerProtocol.dll</HintPath>
     </Reference>
-    <Reference Include="WSShared">
+    <Reference Include="WSShared, Version=7.1.0.0, Culture=neutral, PublicKeyToken=87d3698afe01ef37, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\repo\SyteLine V10 DLL\WSShared.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BL\SalesGoalsByProductsBySalesmanReportBL.cs" />
-    <Compile Include="BL\WeeklySalesReportBL.cs" />
-    <Compile Include="DA\PFIDataAccess.cs" />
-    <Compile Include="Models\AmountByPeriod.cs" />
-    <Compile Include="Models\FiscalYearPeriods.cs" />
-    <Compile Include="Models\SalespersonEmailWeek.cs" />
-    <Compile Include="Models\SLCoItems.cs" />
-    <Compile Include="Models\SLFamCodeAll.cs" />
-    <Compile Include="Models\PFI_FiscalYear.cs" />
-    <Compile Include="Models\SLSlsmanAll.cs" />
-    <Compile Include="Models\ue_PFI_FamilyCodeCategories.cs" />
-    <Compile Include="Models\ue_PFI_FCToFCCategoryMaps.cs" />
-    <Compile Include="Models\ue_PFI_GrossProfitReportSale.cs" />
-    <Compile Include="Models\ue_PFI_SPFCActOverrideAll.cs" />
-    <Compile Include="Models\ue_PFI_SalespersonFCBudgetAll.cs" />
-    <Compile Include="PFI_SalesGoalsByProductsBySalesmanReport.cs" />
-    <Compile Include="PFI_GrossProfitReportSales.cs" />
-    <Compile Include="PFI_WeeklySalesReport.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PFI.Reporting\PFI.Reporting.csproj">
+      <Project>{a033b3fd-df17-42e8-a8c8-44bc61550d83}</Project>
+      <Name>PFI.Reporting</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

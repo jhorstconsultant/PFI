@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFI.Reporting", "PFI.Report
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFI.Reporting.UT", "PFI.Reporting.UT\PFI.Reporting.UT.csproj", "{4EBA55FD-833F-49B4-8D68-6B6ACF8BAD7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFI.Reporting.ConsoleApp", "PFI.Reporting.ConsoleApp\PFI.Reporting.ConsoleApp.csproj", "{B9DD5C0E-A37C-4C78-8233-E283885E34E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4EBA55FD-833F-49B4-8D68-6B6ACF8BAD7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EBA55FD-833F-49B4-8D68-6B6ACF8BAD7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EBA55FD-833F-49B4-8D68-6B6ACF8BAD7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9DD5C0E-A37C-4C78-8233-E283885E34E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9DD5C0E-A37C-4C78-8233-E283885E34E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9DD5C0E-A37C-4C78-8233-E283885E34E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9DD5C0E-A37C-4C78-8233-E283885E34E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
