@@ -39,15 +39,15 @@ namespace PFI.Reporting
         }
 
         [IDOMethod(MethodFlags.None, "Infobar")]
-        public int PFI_SalespersonEmail(string salesPerson, out string html, out string Infobar)
+        public int PFI_SalespersonEmail(string salesPerson, out string html, out string email, out string Infobar, out string subject)
         {
-            return Process_PFI_SalespersonEmail(base.Context.Commands, salesPerson, out html, out Infobar);
+            return Process_PFI_SalespersonEmail(base.Context.Commands, salesPerson, out html, out email, out Infobar, out subject);
         }
 
         [IDOMethod(MethodFlags.None, "Infobar")]
-        public int PFI_SalespersonAllEmail(out string html, out string Infobar)
+        public int PFI_SalespersonAllEmail(out string html, out string Infobar, out string subject)
         {
-            return Process_PFI_SalespersonAllEmail(base.Context.Commands, out html, out Infobar);
+            return Process_PFI_SalespersonAllEmail(base.Context.Commands, out html, out Infobar, out subject);
         }
 
         #region "Process"
@@ -110,11 +110,12 @@ namespace PFI.Reporting
             return results;
         }
 
-        public static int Process_PFI_SalespersonAllEmail(IIDOCommands context, out string html, out string Infobar)
+        public static int Process_PFI_SalespersonAllEmail(IIDOCommands context, out string html, out string Infobar, out string subject)
         {
             int result = 0;
             Infobar = String.Empty;
             html = String.Empty;
+            subject = String.Empty;
             WeeklySalesReportBL bl;
             DateTime lastWeek;
 
@@ -122,6 +123,8 @@ namespace PFI.Reporting
             {
                 lastWeek = DateTime.Now.AddDays(-7);
                 bl = new WeeklySalesReportBL(context);
+
+                subject = bl.GetSalespersonEmailAllSubject();
 
                 html = bl.GetSalespersonEmailBody(lastWeek);
             }
@@ -134,11 +137,13 @@ namespace PFI.Reporting
             return result;
         }
 
-        public static int Process_PFI_SalespersonEmail(IIDOCommands context, string salesPerson, out string html, out string Infobar)
+        public static int Process_PFI_SalespersonEmail(IIDOCommands context, string salesPerson, out string html, out string email, out string Infobar, out string subject)
         {
             int result = 0;
             Infobar = String.Empty;
             html = String.Empty;
+            email = String.Empty;
+            subject = String.Empty;
             WeeklySalesReportBL bl;
             DateTime lastWeek;
 
@@ -147,7 +152,11 @@ namespace PFI.Reporting
                 lastWeek = DateTime.Now.AddDays(-7);
                 bl = new WeeklySalesReportBL(context);
 
+                subject = bl.GetSalespersonEmailSubject(salesPerson.ToUpper());
+
                 html = bl.GetSalespersonEmailBody(lastWeek, salesPerson);
+
+                email = bl.GetSalespersonEmail();
             }
             catch (Exception ex)
             {

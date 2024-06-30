@@ -96,8 +96,9 @@
     <Compile Include="Models\SLFamCodeAll.cs" />
     <Compile Include="Models\PFI_FiscalYear.cs" />
     <Compile Include="Models\SLSlsmanAll.cs" />
-    <Compile Include="Models\ue_PFI_FamilyCodeCategories.cs" />
-    <Compile Include="Models\ue_PFI_FCToFCCategoryMaps.cs" />
+    <Compile Include="Models\ue_PFI_SalespersonEmail.cs" />
+    <Compile Include="Models\ue_PFI_FamilyCodeCategory.cs" />
+    <Compile Include="Models\ue_PFI_FCToFCCategoryMap.cs" />
     <Compile Include="Models\ue_PFI_GrossProfitReportSale.cs" />
     <Compile Include="Models\ue_PFI_SPFCActOverrideAll.cs" />
     <Compile Include="Models\ue_PFI_SalespersonFCBudgetAll.cs" />

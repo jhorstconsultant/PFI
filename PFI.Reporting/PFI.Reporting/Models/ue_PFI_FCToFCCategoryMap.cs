@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace PFI.Reporting.Models
 {
-    public class ue_PFI_FamilyCodeCategories
+    public class ue_PFI_FCToFCCategoryMap
     {
+        public string FamilyCode { get; set; }
         public string FamilyCodeCategory { get; set; }
-        public string BookingInvoiceCode { get; set; }
         public string RowPointer { get; set; }
     }
 }

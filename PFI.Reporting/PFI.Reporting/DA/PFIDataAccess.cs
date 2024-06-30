@@ -131,20 +131,20 @@ namespace PFI.Reporting.DA
 
             return ue_PFI_PeriodsAlls.ToArray();
         }
-        public ue_PFI_FCToFCCategoryMaps[] ue_PFI_FCToFCCategoryMaps()
+        public ue_PFI_FCToFCCategoryMap[] ue_PFI_FCToFCCategoryMaps()
         {
             LoadCollectionResponseData response;
             LoadCollectionRequestData request;
-            ue_PFI_FCToFCCategoryMaps ue_PFI_FCToFCCategoryMap;
+            ue_PFI_FCToFCCategoryMap ue_PFI_FCToFCCategoryMap;
             string filter;
             string lastRowPointer = null;
             int batchSize;
             DataTable responseDT;
             string json;
-            List<ue_PFI_FCToFCCategoryMaps> temp;
-            List<ue_PFI_FCToFCCategoryMaps> ue_PFI_FCToFCCategoryMaps;
+            List<ue_PFI_FCToFCCategoryMap> temp;
+            List<ue_PFI_FCToFCCategoryMap> ue_PFI_FCToFCCategoryMaps;
 
-            ue_PFI_FCToFCCategoryMaps = new List<ue_PFI_FCToFCCategoryMaps>();
+            ue_PFI_FCToFCCategoryMaps = new List<ue_PFI_FCToFCCategoryMap>();
 
             try
             {
@@ -181,7 +181,7 @@ namespace PFI.Reporting.DA
                         //He turns the result to a DataTable then into Json then deserializes into a List object
                         responseDT = new IDODataSet(response).ToDataTable();
                         json = Newtonsoft.Json.JsonConvert.SerializeObject(responseDT);
-                        temp = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ue_PFI_FCToFCCategoryMaps>>(json);
+                        temp = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ue_PFI_FCToFCCategoryMap>>(json);
 
                         //Want the last rowpointer found in the response so I can get the next batch.
                         ue_PFI_FCToFCCategoryMap = temp.LastOrDefault();
@@ -418,20 +418,20 @@ namespace PFI.Reporting.DA
 
             return ue_PFI_GrossProfitReportSales.ToArray();
         }
-        public ue_PFI_FamilyCodeCategories[] ue_PFI_FamilyCodeCategories()
+        public ue_PFI_FamilyCodeCategory[] ue_PFI_FamilyCodeCategories()
         {
             LoadCollectionResponseData response;
             LoadCollectionRequestData request;
-            ue_PFI_FamilyCodeCategories ue_PFI_FamilyCodeCategory;
+            ue_PFI_FamilyCodeCategory ue_PFI_FamilyCodeCategory;
             string filter;
             string lastRowPointer = null;
             int batchSize;
             DataTable responseDT;
             string json;
-            List<ue_PFI_FamilyCodeCategories> temp;
-            List<ue_PFI_FamilyCodeCategories> ue_PFI_FamilyCodeCategories;
+            List<ue_PFI_FamilyCodeCategory> temp;
+            List<ue_PFI_FamilyCodeCategory> ue_PFI_FamilyCodeCategories;
 
-            ue_PFI_FamilyCodeCategories = new List<ue_PFI_FamilyCodeCategories>();
+            ue_PFI_FamilyCodeCategories = new List<ue_PFI_FamilyCodeCategory>();
 
             try
             {   
@@ -468,7 +468,7 @@ namespace PFI.Reporting.DA
                         //He turns the result to a DataTable then into Json then deserializes into a List object
                         responseDT = new IDODataSet(response).ToDataTable();
                         json = Newtonsoft.Json.JsonConvert.SerializeObject(responseDT);
-                        temp = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ue_PFI_FamilyCodeCategories>>(json);
+                        temp = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ue_PFI_FamilyCodeCategory>>(json);
 
                         //Want the last rowpointer found in the response so I can get the next batch.
                         ue_PFI_FamilyCodeCategory = temp.LastOrDefault();
@@ -486,6 +486,75 @@ namespace PFI.Reporting.DA
             }
 
             return ue_PFI_FamilyCodeCategories.ToArray();
+        }
+        public ue_PFI_SalespersonEmail[] ue_PFI_SalespersonEmails(string startingSlsperson, string endingSlsperson)
+        {
+            LoadCollectionResponseData response;
+            LoadCollectionRequestData request;
+            ue_PFI_SalespersonEmail ue_PFI_SalespersonEmail;
+            string filter;
+            string lastRowPointer = null;
+            int batchSize;
+            DataTable responseDT;
+            string json;
+            List<ue_PFI_SalespersonEmail> temp;
+            List<ue_PFI_SalespersonEmail> ue_PFI_SalespersonEmails;
+
+            ue_PFI_SalespersonEmails = new List<ue_PFI_SalespersonEmail>();
+
+            try
+            {
+                batchSize = 0;
+                do
+                {
+                    if (string.IsNullOrWhiteSpace(lastRowPointer))
+                    {
+                        filter = $" Salesperson >= '{startingSlsperson}' and Salesperson <= '{endingSlsperson}' "; //SyteLine's IDO needs a valid filter or it will cause order by errors.
+                    }
+                    else
+                    {
+                        //If it isn't the first loop I want to grab the next batch by looking for RP greater than the last RP found.
+                        filter = $" Salesperson >= '{startingSlsperson}' and Salesperson <= '{endingSlsperson}' and RowPointer > '{lastRowPointer}' ";
+                    }
+
+                    request = new LoadCollectionRequestData
+                    {
+                        IDOName = "ue_PFI_SalespersonEmails",
+                        PropertyList = new PropertyList("Salesperson, Email, RowPointer"),
+                        Filter = filter,
+                        OrderBy = "RowPointer", //Sorting by RowPointer so no duplicates in the result set.
+                        RecordCap = 0 //It means pull back as many records as possible.
+                    };
+
+                    response = Context.LoadCollection(request);
+
+                    batchSize = response.Items.Count;
+
+                    //Didn't want to cast to DT then do JSON Serial/Deserial on an empty collection.
+                    if (batchSize > 0)
+                    {
+                        //Brian Antos Method
+                        //He turns the result to a DataTable then into Json then deserializes into a List object
+                        responseDT = new IDODataSet(response).ToDataTable();
+                        json = Newtonsoft.Json.JsonConvert.SerializeObject(responseDT);
+                        temp = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ue_PFI_SalespersonEmail>>(json);
+
+                        //Want the last rowpointer found in the response so I can get the next batch.
+                        ue_PFI_SalespersonEmail = temp.LastOrDefault();
+
+                        if (ue_PFI_SalespersonEmail != null)
+                            lastRowPointer = ue_PFI_SalespersonEmail.RowPointer;
+
+                        ue_PFI_SalespersonEmails.AddRange(temp);
+                    }
+                } while (batchSize > 0);
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(string.Format("Method:'{0}' {1} Exception:'{2}'", "ue_PFI_SalespersonEmails", Environment.NewLine, ex.Message)));
+            }
+
+            return ue_PFI_SalespersonEmails.ToArray();
         }
         public SLCoItems[] SLCoItems()
         {

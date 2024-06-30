@@ -27,18 +27,30 @@ namespace PFI.Reporting.ConsoleApp
                 if (res.Result.ToString() != "Success") { throw new Exception(res.Result.ToString()); }
 
                 string html = "";
+                string email = "";
                 string ib = "";
+                string subject = "";
                 int result;
 
                 //result = PFI_WeeklySalesReport.Process_PFI_SalespersonEmail(oclient, "3A", out html, out ib);
-                dtResults = PFI_WeeklySalesReport.Process_PFI_GetReport(oclient,
-                    new DateTime(2024, 3, 30),
-                    new DateTime(2024, 3, 30),
-                    "3A", "3A");
+                //dtResults = PFI_WeeklySalesReport.Process_PFI_GetReport(oclient,
+                //    new DateTime(2024, 3, 30),
+                //    new DateTime(2024, 3, 30),
+                //    "3A", "3A");
+
+                //result = PFI_WeeklySalesReport.Process_PFI_SalespersonEmail(oclient,
+                //    "3A", out html, out email, out ib, out subject);
+
+                result = PFI_WeeklySalesReport.Process_PFI_SalespersonAllEmail(oclient,
+                    out html, out ib, out subject);
 
                 Console.WriteLine(html);
 
+                //Console.WriteLine(email);
+
                 Console.WriteLine(ib);
+
+                Console.WriteLine(subject);
 
                 //Console.WriteLine(result);
 

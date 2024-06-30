@@ -54,6 +54,21 @@ namespace PFI.Reporting.BL
                 EndingSalesPerson = SalesPersons.Select(s => s.Slsman).Max();
         }
 
+        public string GetSalespersonEmail()
+        {
+            StringBuilder result = new StringBuilder();
+            ue_PFI_SalespersonEmail[] slsEmails = DataAccess.ue_PFI_SalespersonEmails(StartingSalesPerson, EndingSalesPerson);
+            string[] emails = slsEmails.Select(s=>s.Email).Distinct().ToArray();
+
+            foreach(string email in emails) 
+            {
+                result.Append(email);
+                result.Append(";");
+            }
+
+            return result.ToString();
+        }
+
         public SLSlsmanAll[] SalesPersons { get; set; }
         public string StartingSalesPerson { get; set; }
         public string EndingSalesPerson { get; set; }
@@ -98,7 +113,7 @@ namespace PFI.Reporting.BL
         }
         public Tuple<string, string>[] GetFamilyCodeCategories()
         {
-            ue_PFI_FCToFCCategoryMaps[] maps;
+            ue_PFI_FCToFCCategoryMap[] maps;
 
             maps = DataAccess.ue_PFI_FCToFCCategoryMaps();
 
@@ -127,7 +142,7 @@ namespace PFI.Reporting.BL
         public DataRow CreateNewRow(DataTable dataTable, DateTime week)
         {
             DataRow row;
-            ue_PFI_FamilyCodeCategories[] fcc = null;
+            ue_PFI_FamilyCodeCategory[] fcc = null;
 
             fcc = DataAccess.ue_PFI_FamilyCodeCategories();
 
@@ -147,7 +162,7 @@ namespace PFI.Reporting.BL
 
             return row;
         }
-        public decimal GetCategoryTotal(ue_PFI_FamilyCodeCategories familyCodeCategory, DateTime week)
+        public decimal GetCategoryTotal(ue_PFI_FamilyCodeCategory familyCodeCategory, DateTime week)
         {
             decimal result = -1;
             decimal? actualOverride;
@@ -167,11 +182,12 @@ namespace PFI.Reporting.BL
                     .Where(w => w.SalesPerson.CompareTo(EndingSalesPerson) <= 0)
                     .Select(s => s.ActualOverride).Sum();
 
-                if (actualOverride.HasValue == true && actualOverride > 0)
-                {
-                    result = actualOverride.Value;
-                }
-                else if (familyCodeCategory.BookingInvoiceCode == "I")
+                //if (actualOverride.HasValue == true && actualOverride > 0)
+                //{
+                //    result = actualOverride.Value;
+                //}
+                //else 
+                if (familyCodeCategory.BookingInvoiceCode == "I")
                 {
                     result = 0;
                     foreach (string fc in FamilyCodeCategories
@@ -200,7 +216,14 @@ namespace PFI.Reporting.BL
                             .Where(w => w.CoSlsman.CompareTo(EndingSalesPerson) <= 0)
                             .Select(s => s.DerNetPrice).Sum();
                 }
-            }catch(Exception ex) 
+
+                if (actualOverride.HasValue == true && actualOverride > 0)
+                {
+                    result += actualOverride.Value;
+                }
+
+            }
+            catch (Exception ex) 
             {
                 result = 0;
                 throw new Exception("Error in GetCategoryTotal");
@@ -384,6 +407,14 @@ namespace PFI.Reporting.BL
 
             return html;
         }
+        public string GetSalespersonEmailSubject(string salesperson)
+        {
+            return $"{SiteRef} Weekly Sales Report - Territory {salesperson}";
+        }
+        public string GetSalespersonEmailAllSubject()
+        {
+            return $"{SiteRef} Weekly Sales Report - All";
+        }
         private DateTime[] GetFourFourFive(DateTime startDate)
         {
             List<DateTime> fourFourFiveSeq;
@@ -470,6 +501,7 @@ namespace PFI.Reporting.BL
             StringBuilder sb = new StringBuilder();
             SalespersonEmailWeek[] comparison;
             DateTime earliestDate;
+            Decimal supplierCompoundsTotal;
 
             comparison = GetEmailComparision(salespersonEmailWeeks);
 
@@ -510,12 +542,17 @@ namespace PFI.Reporting.BL
             else
                 sb.AppendLine($"<h1><b>All</b></h1>");
 
-            sb.AppendLine($"<h2><b>Weekending:</b> {endingWeek.ToString("yyyy-MM-dd")}</h2>");
+            sb.AppendLine($"<h2><b>Site:</b> {SiteRef}</h2>");
+
+            sb.AppendLine($"<h2><b>Weekending:</b> {endingWeek.ToString("MM-dd-yyyy")}</h2>");
 
             sb.AppendLine("<table>");
 
             foreach (DateTime fff in salespersonEmailWeeks.OrderByDescending(o => o.WeekDate).Select(s=>s.FourFourFiveDate).Distinct())
             {
+
+                supplierCompoundsTotal = salespersonEmailWeeks.Where(w => w.FourFourFiveDate == fff).Sum(s => s.SupplierCompounds);
+
                 sb.AppendLine("\t<tr>");
                 sb.AppendLine("\t\t<th>W/E</th>");
                 sb.AppendLine("\t\t<th>Tumbling</th>");
@@ -524,7 +561,10 @@ namespace PFI.Reporting.BL
                 sb.AppendLine("\t\t<th>Vibratory Media</th>");
                 sb.AppendLine("\t\t<th>Blast Media</th>");
                 sb.AppendLine("\t\t<th>Spare Parts</th>");
-                sb.AppendLine("\t\t<th>Supplier Compounds</th>");
+                
+                if(supplierCompoundsTotal > 0)
+                    sb.AppendLine("\t\t<th>Supplier Compounds</th>");
+                
                 sb.AppendLine("\t\t<th>Vibratory Equipment</th>");
                 sb.AppendLine("\t\t<th>Blast Equipment</th>");
                 sb.AppendLine("\t\t<th>Equipment</th>");
@@ -534,14 +574,17 @@ namespace PFI.Reporting.BL
                 foreach (SalespersonEmailWeek sew in salespersonEmailWeeks.Where(w=>w.FourFourFiveDate == fff).OrderByDescending(o => o.WeekDate))
                 {
                     sb.AppendLine("\t<tr>");
-                    sb.AppendLine($"\t<td>{sew.WeekDate.ToString("yyyy-MM-dd")}</td>");
+                    sb.AppendLine($"\t<td>{sew.WeekDate.ToString("MM-dd-yyyy")}</td>");
                     sb.AppendLine($"\t<td>{FormatCurrency(sew.Tumbling)}</td>");
                     sb.AppendLine($"\t<td>{FormatCurrency(sew.Blasting)}</td>");
                     sb.AppendLine($"\t<td>{FormatCurrency(sew.Chemtrol)}</td>");
                     sb.AppendLine($"\t<td>{FormatCurrency(sew.VibratoryMedia)}</td>");
                     sb.AppendLine($"\t<td>{FormatCurrency(sew.BlastMedia)}</td>");
                     sb.AppendLine($"\t<td>{FormatCurrency(sew.SpareParts)}</td>");
-                    sb.AppendLine($"\t<td>{FormatCurrency(sew.SupplierCompounds)}</td>");
+
+                    if (supplierCompoundsTotal > 0)
+                        sb.AppendLine($"\t<td>{FormatCurrency(sew.SupplierCompounds)}</td>");
+
                     sb.AppendLine($"\t<td>{FormatCurrency(sew.VibratoryEquipment)}</td>");
                     sb.AppendLine($"\t<td>{FormatCurrency(sew.BlastEquipment)}</td>");
                     sb.AppendLine($"\t<td>{FormatCurrency(sew.Equipment)}</td>");
@@ -557,7 +600,10 @@ namespace PFI.Reporting.BL
                 sb.AppendLine($"\t<td class='total'>{FormatCurrency(salespersonEmailWeeks.Where(w=>w.FourFourFiveDate == fff).Sum(s=>s.VibratoryMedia))}</td>");
                 sb.AppendLine($"\t<td class='total'>{FormatCurrency(salespersonEmailWeeks.Where(w=>w.FourFourFiveDate == fff).Sum(s=>s.BlastMedia))}</td>");
                 sb.AppendLine($"\t<td class='total'>{FormatCurrency(salespersonEmailWeeks.Where(w=>w.FourFourFiveDate == fff).Sum(s=>s.SpareParts))}</td>");
-                sb.AppendLine($"\t<td class='total'>{FormatCurrency(salespersonEmailWeeks.Where(w=>w.FourFourFiveDate == fff).Sum(s=>s.SupplierCompounds))}</td>");
+
+                if (supplierCompoundsTotal > 0)
+                    sb.AppendLine($"\t<td class='total'>{FormatCurrency(salespersonEmailWeeks.Where(w=>w.FourFourFiveDate == fff).Sum(s=>s.SupplierCompounds))}</td>");
+
                 sb.AppendLine($"\t<td class='total'>{FormatCurrency(salespersonEmailWeeks.Where(w=>w.FourFourFiveDate == fff).Sum(s=>s.VibratoryEquipment))}</td>");
                 sb.AppendLine($"\t<td class='total'>{FormatCurrency(salespersonEmailWeeks.Where(w=>w.FourFourFiveDate == fff).Sum(s=>s.BlastEquipment))}</td>");
                 sb.AppendLine($"\t<td class='total'>{FormatCurrency(salespersonEmailWeeks.Where(w=>w.FourFourFiveDate == fff).Sum(s=>s.Equipment))}</td>");
@@ -580,7 +626,10 @@ namespace PFI.Reporting.BL
                     sb.AppendLine(GetStyledComparisonLine(comparison.Where(w => w.FourFourFiveDate == fff).Sum(s => s.VibratoryMedia)));
                     sb.AppendLine(GetStyledComparisonLine(comparison.Where(w => w.FourFourFiveDate == fff).Sum(s => s.BlastMedia)));
                     sb.AppendLine(GetStyledComparisonLine(comparison.Where(w => w.FourFourFiveDate == fff).Sum(s => s.SpareParts)));
-                    sb.AppendLine(GetStyledComparisonLine(comparison.Where(w => w.FourFourFiveDate == fff).Sum(s => s.SupplierCompounds)));
+
+                    if (supplierCompoundsTotal > 0)
+                        sb.AppendLine(GetStyledComparisonLine(comparison.Where(w => w.FourFourFiveDate == fff).Sum(s => s.SupplierCompounds)));
+
                     sb.AppendLine(GetStyledComparisonLine(comparison.Where(w => w.FourFourFiveDate == fff).Sum(s => s.VibratoryEquipment)));
                     sb.AppendLine(GetStyledComparisonLine(comparison.Where(w => w.FourFourFiveDate == fff).Sum(s => s.BlastEquipment)));
                     sb.AppendLine(GetStyledComparisonLine(comparison.Where(w => w.FourFourFiveDate == fff).Sum(s => s.Equipment)));
